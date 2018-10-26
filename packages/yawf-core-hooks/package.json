@@ -1,5 +1,6 @@
 {
   "name": "@yawf/yawf-core-hooks",
+  "private": false,
   "version": "0.1.0",
   "description": "Yet Another Web Framework",
   "author": "mk2 <mk2@mk2.red>",
