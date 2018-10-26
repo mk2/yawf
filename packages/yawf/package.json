@@ -1,6 +1,6 @@
 {
   "name": "@yawf/yawf",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Yet Another Web Framework",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "",
@@ -21,7 +21,7 @@
     "test": "jest --config ./jest.config.js --coverage"
   },
   "dependencies": {
-    "@yawf/yawf-core": "^0.0.0",
-    "@yawf/yawf-core-hooks": "^0.0.0"
+    "@yawf/yawf-core": "^0.1.0",
+    "@yawf/yawf-core-hooks": "^0.1.0"
   }
 }
