@@ -1,7 +1,7 @@
 {
   "name": "@yawf/yawf-core",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yet Another Web Framework",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "",
