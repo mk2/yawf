@@ -1,6 +1,5 @@
 {
   "name": "@yawf/yawf-core-hooks",
-  "private": false,
   "version": "0.1.1",
   "description": "Yet Another Web Framework",
   "author": "mk2 <mk2@mk2.red>",
@@ -22,5 +21,6 @@
     "knex": "^0.15.2",
     "objection": "^1.4.0",
     "sqlite3": "^4.0.3"
-  }
+  },
+  "gitHead": "dab18b89013d6bf8f96488baf142cdd55a532a35"
 }
