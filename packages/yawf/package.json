@@ -24,5 +24,8 @@
     "@yawf/yawf-core": "^0.1.2",
     "@yawf/yawf-core-hooks": "^0.1.2"
   },
-  "gitHead": "dab18b89013d6bf8f96488baf142cdd55a532a35"
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "dd9b68a9276249aee00bdd1672bcdfd6c56d7b22"
 }

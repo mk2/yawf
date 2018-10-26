@@ -22,5 +22,8 @@
     "lodash": "^4.17.11",
     "pug": "^2.0.3"
   },
-  "gitHead": "dab18b89013d6bf8f96488baf142cdd55a532a35"
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "dd9b68a9276249aee00bdd1672bcdfd6c56d7b22"
 }
