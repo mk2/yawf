@@ -1,0 +1,29 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "prebuild": "lerna exec --parallel -- rimraf lib",
+    "build": "lerna exec --parallel -- babel src -d lib --config-file ../../babel.config.js",
+    "watch": "lerna exec --parallel -- babel src -d lib --config-file ../../babel.config.js -w",
+    "clean": "lerna exec --parallel -- rimraf node_modules",
+    "packageInstall": "lerna exec --parallel -- npm i",
+    "packageLink": "lerna link",
+    "packageTest": "lerna run test",
+    "flow": "flow"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-export-default-from": "^7.0.0",
+    "@babel/plugin-syntax-import-meta": "^7.0.0",
+    "@babel/plugin-transform-flow-comments": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "babel-plugin-dynamic-import-node": "^2.2.0",
+    "flow-bin": "^0.83.0",
+    "jest": "^23.6.0",
+    "lerna": "^3.4.2",
+    "regenerator-runtime": "^0.12.1",
+    "rimraf": "^2.6.2"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@yawf/yawf-core",
+  "version": "0.0.0",
+  "description": "Yet Another Web Framework",
+  "author": "mk2 <mk2@mk2.red>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "jest --config ./jest.config.js --coverage"
+  },
+  "dependencies": {
+    "@babel/register": "^7.0.0",
+    "express": "^4.16.4",
+    "lodash": "^4.17.11",
+    "pug": "^2.0.3"
+  }
+}
