@@ -1,4 +1,5 @@
 // @flow
+
 import '@babel/register'
 import EventEmitter from 'events'
 import FrameworkEvents from './framework-events'
@@ -6,16 +7,19 @@ import path from 'path'
 import { fs } from './util'
 import _ from 'lodash'
 import { loadFiles } from './util'
-import appUtils from './forApp/Util'
+import appUtils from './forApp/util'
 import config from './config'
 
 /*::
-import { $Application, $Request, $Response } from 'express'
-import { HookApi } from './forApp/hook'
+import type { $Application, $Request, $Response, NextFunction } from 'express'
+import express from 'express'
+import { InternalHookApi } from './forApp/hook'
 
+export type Path = string | RegExp
 export type ServerApi = $Application
 export type Req = $Request
 export type Res = $Response
+export type NextFn = NextFunction
 
 type CoreStartOptions = {
   hateGlobal: boolean
@@ -30,31 +34,45 @@ type ConstructorArguments = {
 type ActionFn = (req: Req, res: Res) => void
 
 type RouteFunctionArguments = {
-  path: string,
+  path: Path,
   actionFn: ActionFn
 }
 
-interface CoreApi {
+export interface CoreApi {
   get(RouteFunctionArguments): void;
   post(RouteFunctionArguments): void;
   put(RouteFunctionArguments): void;
   delete(RouteFunctionArguments): void;
   play(number, () => void): void;
   reloadGlobal(): void;
-  loadAppFiles(): Promise<any>;
-  setup(): Promise<any>;
-  loadHooks({ [string]: HookApi }): void;
+  loadAppFiles(): ?Promise<any>;
+  setup(): ?Promise<any>;
+  loadHooks({ [string]: InternalHookApi }): void;
+  on(any, Function): CoreApi;
+  emit(any, ...args: Array<any>): boolean;
+}
+
+export interface InternalCoreApi extends CoreApi {
+  __global: any;
+  __logger: any;
+  __config: any;
+  __actions: { [string]: any };
+  __helpers: { [string]: any };
+  __hooks: { [string]: InternalHookApi };
+  __serverApi: ?ServerApi;
+  __rootDir: ?string;
+  __events: any;
 }
  */
 
-export default class extends EventEmitter /*:: implements CoreApi */ {
+export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __global /*: any */ = {}
   __logger /*: any */ = console
   __config /*: any */ = {}
   __actions /*: { [string]: any } */ = {}
   __helpers /*: { [string]: any } */ = {}
-  __hooks /*: { [string]: HookApi } */ = {}
+  __hooks /*: { [string]: InternalHookApi } */ = {}
   __serverApi /*: ?ServerApi */ = null
   __rootDir /*: ?string */ = null
   __events /*: any */ = {}
@@ -72,9 +90,17 @@ export default class extends EventEmitter /*:: implements CoreApi */ {
     }
   }
 
+  on(event /*: any */, listenFn /*: Function */) /*: this */ {
+    return super.on(event, listenFn)
+  }
+
+  emit(event /*: any */, ...args /*: Array<any> */) /*: boolean */ {
+    return super.emit(event, ...args)
+  }
+
   get({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
-    this.__serverApi.get(path, async (req, res, next) => {
+    this.__serverApi.get(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
@@ -82,7 +108,7 @@ export default class extends EventEmitter /*:: implements CoreApi */ {
 
   post({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
-    this.__serverApi.post(path, async (req, res, next) => {
+    this.__serverApi.post(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
@@ -90,7 +116,7 @@ export default class extends EventEmitter /*:: implements CoreApi */ {
 
   put({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
-    this.__serverApi.put(path, async (req, res, next) => {
+    this.__serverApi.put(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
@@ -98,7 +124,7 @@ export default class extends EventEmitter /*:: implements CoreApi */ {
 
   delete({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
-    this.__serverApi.delete(path, async (req, res, next) => {
+    this.__serverApi.delete(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })

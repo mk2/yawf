@@ -7,13 +7,16 @@ export interface HookApi {
   configure(): void;
   registerActions(): void;
   bindActionsToRoutes(): void;
+}
+
+export interface InternalHookApi extends HookApi {
   __name: ?string;
   __isLoaded: boolean;
   __err: ?Error;
 }
  */
 
-export default class Hook /*:: implements HookApi */ {
+export default class Hook /*:: implements InternalHookApi */ {
 
   __name /*: ?string */ = null
   __isLoaded /*: boolean */ = false

@@ -1,7 +1,8 @@
-// @flow
 import path from 'path'
 import _fs from 'fs'
 import _ from 'lodash'
+
+// @flow
 
 export const fs = _fs.promises
 export const dirname = __dirname

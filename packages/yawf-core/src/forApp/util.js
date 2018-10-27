@@ -1,4 +1,5 @@
 // @flow
+
 import { loadFiles } from '../util'
 
 export default {

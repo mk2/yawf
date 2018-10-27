@@ -1,24 +1,32 @@
 // @flow
+
 import express from 'express'
 import Core from './core'
 import { dirname } from './util'
 
 /*::
-import type { ServerApi } from './core'
+import type { ServerApi, InternalCoreApi } from './core'
 
 type Options = {
   serverApi: ?ServerApi,
   port: number,
   rootDir: ?string
 }
+
+export interface StarterApi {
+  +rootDir: ?string;
+  +port: number;
+  +core: ?InternalCoreApi;
+  +events: any;
+}
 */
 
-export default class {
+export default class Starter /*:: implements StarterApi */ {
 
   __rootDir /*: ?string */ = null
   __port /*: number */ = 3000
   __serverApi /*: ?ServerApi */ = null
-  __core /*: any */ = null
+  __core /*: InternalCoreApi | void */ = undefined
 
   constructor(options /*: Options */) {
     options = options || {}
@@ -47,22 +55,26 @@ export default class {
   }
 
   get events() {
+    if (!this.core) return {}
     return this.core.__events
   }
 
   get logger() {
+    if (!this.core) return console
     return this.core.__logger
   }
 
   async start() {
+    if (!this.core) return
+    const core = this.core
     try {
-      this.core.emit(this.events.core.willBoot)
-      this.core.emit(this.events.core.willSetup)
-      await this.core.setup()
-      this.core.emit(this.events.core.didSetup)
-      this.core.play(this.port, () => {})
-      this.core.emit(this.events.core.didBoot)
-      this.core.emit(this.events.core.ready)
+      core.emit(this.events.core.willBoot)
+      core.emit(this.events.core.willSetup)
+      await core.setup()
+      core.emit(this.events.core.didSetup)
+      core.play(this.port, () => {})
+      core.emit(this.events.core.didBoot)
+      core.emit(this.events.core.ready)
     } catch (e) {
       this.core.emit(this.events.core.didHappenError, e)
     }
