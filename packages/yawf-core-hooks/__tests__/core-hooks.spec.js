@@ -1,7 +1,11 @@
-const CoreHooks = require('../')
+const coreHooks = require('../').default
+const { Core } = require('@yawf/yawf-core')
 
 describe('core-hooks', () => {
+
   test('', () => {
-    expect(true).toBeTruthy()
+    const core = new Core({ serverApi: {}, rootDir: process.cwd(), options: {} })
+    core.loadHooks(coreHooks)
+    expect(core.__hooks.objectionJsWrapperHook).toBeDefined()
   })
 })

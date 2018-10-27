@@ -1,16 +1,17 @@
 module.exports = function(api) {
   api.cache(true)
   return {
-    "presets": [
+    presets: [
       [
         "@babel/preset-env", {
-          "targets": {
-            "node": "current"
-          }
+          targets: {
+            node: "current"
+          },
+          modules: "cjs"
         }
       ]
     ],
-    "plugins": [
+    plugins: [
       "@babel/plugin-syntax-import-meta",
       "@babel/plugin-proposal-export-default-from",
       "@babel/plugin-proposal-class-properties",

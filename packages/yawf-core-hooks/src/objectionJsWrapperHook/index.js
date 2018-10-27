@@ -20,7 +20,6 @@ export default class extends Hook {
     this.knex = Knex($hookConfig(this))
     Model.knex(this.knex)
     const models = await $loadFiles('app', 'models')
-    console.log(models)
   }
 
 }
