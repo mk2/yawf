@@ -1,4 +1,4 @@
-const coreHooks = require('../').default
+const coreHooks = require('../')
 const { Core } = require('@yawf/yawf-core')
 
 describe('core-hooks', () => {

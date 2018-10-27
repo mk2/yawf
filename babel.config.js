@@ -16,6 +16,7 @@ module.exports = function(api) {
       "@babel/plugin-proposal-export-default-from",
       "@babel/plugin-proposal-class-properties",
       "@babel/plugin-transform-flow-comments",
+      "add-module-exports",
       "dynamic-import-node"
     ]
   }

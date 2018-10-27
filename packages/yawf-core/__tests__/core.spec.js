@@ -1,5 +1,5 @@
 const mod = require('../')
-const Core = require('../lib/core').default
+const Core = require('../lib/core')
 const boot = mod.boot
 const process = require('process')
 const path = require('path')
