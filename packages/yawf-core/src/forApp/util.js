@@ -9,7 +9,10 @@ export default {
   $error,
   $on,
   $events,
-  $loadFiles
+  $loadFiles,
+  $registerToGlobal,
+  $hooks,
+  $loadHooks
 }
 
 function $core() {
@@ -18,6 +21,10 @@ function $core() {
 
 function $config() {
   return $core().__config
+}
+
+function $hooks() {
+  return $core().__hooks
 }
 
 function $hookConfig(hook /*: any */) {
@@ -36,15 +43,23 @@ function $events() {
   return $core().__events
 }
 
+function $loadHooks(hooks /*: any */) {
+  $core().loadHooks(hooks)
+}
+
 function $emit(event /*: any */, ...args /*: any */) {
   $core().emit(event, ...args)
+}
+
+function $registerToGlobal(obj /*: any */, ...prefixes /*: Array<any> */) {
+  $core().loadObjectToGlobal(obj, ...prefixes)
 }
 
 function $reloadGlobal() {
   $core().reloadGlobal()
 }
 
-function $on(event /*: any */, listenFn /*: any */) {
+function $on(event /*: any */, listenFn /*: Function */) {
   $core().on(event, listenFn)
 }
 

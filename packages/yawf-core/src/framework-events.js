@@ -4,10 +4,12 @@ export default {
    * Core Events
    */
   core: {
-    willBoot: Symbol(),
-    willSetup: Symbol(),
-    didSetup: Symbol(),
-    didBoot: Symbol(),
+    willBootstrap: Symbol(),
+    didBootstrap: Symbol(),
+    willInitialize: Symbol(),
+    didInitialize: Symbol(),
+    willStart: Symbol(),
+    didStart: Symbol(),
     ready: Symbol(),
     didHappenError: Symbol()
   },

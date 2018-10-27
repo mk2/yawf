@@ -64,16 +64,37 @@ export default class Starter /*:: implements StarterApi */ {
     return this.core.__logger
   }
 
-  async start() {
+  async bootstrap() {
     if (!this.core) return
     const core = this.core
     try {
-      core.emit(this.events.core.willBoot)
-      core.emit(this.events.core.willSetup)
-      await core.setup()
-      core.emit(this.events.core.didSetup)
+      core.emit(this.events.core.willBootstrap)
+      await core.bootstrap()
+      core.emit(this.events.core.didBootstrap)
+    } catch (e) {
+      this.core.emit(this.events.core.didHappenError, e)
+    }
+  }
+
+  async initialize() {
+    if (!this.core) return
+    const core = this.core
+    try {
+      core.emit(this.events.core.willInitialize)
+      await core.initialize()
+      core.emit(this.events.core.didInitialize)
+    } catch (e) {
+      this.core.emit(this.events.core.didHappenError, e)
+    }
+  }
+
+  start() {
+    if (!this.core) return
+    const core = this.core
+    try {
+      core.emit(this.events.core.willStart)
       core.play(this.port, () => {})
-      core.emit(this.events.core.didBoot)
+      core.emit(this.events.core.didStart)
       core.emit(this.events.core.ready)
     } catch (e) {
       this.core.emit(this.events.core.didHappenError, e)

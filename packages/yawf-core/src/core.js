@@ -46,7 +46,8 @@ export interface CoreApi {
   play(number, () => void): void;
   reloadGlobal(): void;
   loadAppFiles(): ?Promise<any>;
-  setup(): ?Promise<any>;
+  bootstrap(): ?Promise<any>;
+  initialize(): ?Promise<any>;
   loadHooks({ [string]: InternalHookApi }): void;
   on(any, Function): CoreApi;
   emit(any, ...args: Array<any>): boolean;
@@ -363,10 +364,18 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__serverApi.set('view engine', this.__config.viewTemplate.engine)
   }
 
-  async setup() {
+  async bootstrap() {
     try {
       await this.loadAppFiles()
       this.loadToGlobal()
+    } catch (e) {
+      this.emit(this.__events.core.didHappenError, e)
+      throw e
+    }
+  }
+
+  async initialize() {
+    try {
       this.callHookDefaultsMethods()
       this.configure()
       this.callHookConfigureMethods()
