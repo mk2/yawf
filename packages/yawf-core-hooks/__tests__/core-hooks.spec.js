@@ -9,7 +9,8 @@ describe('core-hooks', () => {
     await starter.bootstrap()
     $loadHooks(coreHooks)
     await starter.initialize()
-    expect(user).toBeDefined()
+    expect(User).toBeDefined()
+    expect($knex).toBeDefined()
   })
 
 })

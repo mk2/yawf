@@ -1,6 +1,7 @@
 import Knex from 'knex'
 import { Model } from 'objection'
 import { Hook } from '@yawf/yawf-core'
+import _ from 'lodash'
 
 export default class extends Hook {
 
@@ -20,8 +21,24 @@ export default class extends Hook {
     this.knex = Knex($hookConfig(this))
     Model.knex(this.knex)
     const models = await $loadFiles('app', 'models')
-    console.log(models)
+    for (let key in models) {
+      const regularModelName = _.upperFirst(key)
+      const model = models[key]
+      Object.defineProperty(model, 'tableName', {
+        enumerable: true,
+        configurable: true,
+        get() {
+          return key
+        }
+      })
+      this.knex.schema.createTable(model.tableName)
+      models[regularModelName] = model
+      delete models[key]
+    }
     $registerToGlobal(models)
+    const globalFuncs = {}
+    globalFuncs['$knex'] = (() => this.knex).bind(this)
+    $registerToGlobal(globalFuncs)
   }
 
 }
