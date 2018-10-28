@@ -12,7 +12,7 @@ export default class extends Hook {
       client: 'sqlite3',
       useNullAsDefault: true,
       connection: {
-        filename: 'example.sqlite3'
+        filename: 'yawf.sqlite3'
       }
     }
   }

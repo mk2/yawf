@@ -6,9 +6,8 @@
     "build": "lerna exec --parallel -- babel src -d lib --config-file ../../babel.config.js",
     "watch": "lerna exec --parallel -- babel src -d lib --config-file ../../babel.config.js -w",
     "clean": "lerna exec --parallel -- rimraf node_modules",
-    "packageInstall": "lerna exec --parallel -- npm i",
-    "packageLink": "lerna link",
-    "packageTest": "lerna run test",
+    "packageInstall": "lerna bootstrap; lerna exec --parallel -- npm i",
+    "packageTest": "npm run build; lerna run test",
     "flow": "flow"
   },
   "devDependencies": {
