@@ -18,9 +18,9 @@ export interface InternalHookApi extends HookApi {
 
 export default class Hook /*:: implements InternalHookApi */ {
 
-  __name /*: ?string */ = null
-  __isLoaded /*: boolean */ = false
-  __err /*: ?Error */ = null
+  __name = null
+  __isLoaded = false
+  __err = null
 
   defaults() {
   }

@@ -11,7 +11,7 @@ import appUtils from './forApp/util'
 import config from './config'
 
 /*::
-import type { $Application, $Request, $Response, NextFunction } from 'express'
+import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
 import express from 'express'
 import { InternalHookApi } from './forApp/hook'
 
@@ -43,7 +43,7 @@ export interface CoreApi {
   post(RouteFunctionArguments): void;
   put(RouteFunctionArguments): void;
   delete(RouteFunctionArguments): void;
-  play(number, () => void): void;
+  play(number, Function): void;
   reloadGlobal(): void;
   loadAppFiles(): ?Promise<any>;
   bootstrap(): ?Promise<any>;
@@ -51,6 +51,7 @@ export interface CoreApi {
   loadHooks({ [string]: InternalHookApi }): void;
   on(any, Function): CoreApi;
   emit(any, ...args: Array<any>): boolean;
+  loadObjectToGlobal(any): void;
 }
 
 export interface InternalCoreApi extends CoreApi {
@@ -63,20 +64,22 @@ export interface InternalCoreApi extends CoreApi {
   __serverApi: ?ServerApi;
   __rootDir: ?string;
   __events: any;
+  __middlewares: Array<Middleware>;
 }
  */
 
 export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
-  __global /*: any */ = {}
-  __logger /*: any */ = console
-  __config /*: any */ = {}
-  __actions /*: { [string]: any } */ = {}
-  __helpers /*: { [string]: any } */ = {}
-  __hooks /*: { [string]: InternalHookApi } */ = {}
-  __serverApi /*: ?ServerApi */ = null
-  __rootDir /*: ?string */ = null
-  __events /*: any */ = {}
+  __global = {}
+  __logger = console
+  __config = {}
+  __actions = {}
+  __helpers = {}
+  __hooks = {}
+  __serverApi = null
+  __rootDir = null
+  __events = {}
+  __middlewares = []
 
   constructor({ serverApi, rootDir, options } /*: ConstructorArguments */) {
     super()
@@ -392,6 +395,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   configure() {
     this.configureViewEngine()
+    if (this.__serverApi) {
+      for (let middleware of this.__middlewares) {
+        this.__serverApi.use(middleware)
+      }
+    }
   }
 
   callHookDefaultsMethods() {

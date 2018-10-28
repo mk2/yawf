@@ -1,5 +1,10 @@
 // @flow
 
+/*::
+import type { Middleware } from 'express'
+import type { InternalCoreApi } from '../core'
+ */
+
 import { loadFiles } from '../util'
 
 export default {
@@ -15,7 +20,7 @@ export default {
   $loadHooks
 }
 
-function $core() {
+function $core() /*: InternalCoreApi */ {
   return global['__frameworkCore']
 }
 
@@ -23,7 +28,7 @@ function $config() {
   return $core().__config
 }
 
-function $hooks() {
+function $hooks() /*: { [string]: any } */ {
   return $core().__hooks
 }
 
@@ -43,6 +48,14 @@ function $events() {
   return $core().__events
 }
 
+function $middlewares() /*: Array<Middleware> */ {
+  return $core().__middlewares
+}
+
+function $addMiddleware(middleware /*: Middleware */) {
+  $core().__middlewares.push(middleware)
+}
+
 function $loadHooks(hooks /*: any */) {
   $core().loadHooks(hooks)
 }
@@ -51,7 +64,7 @@ function $emit(event /*: any */, ...args /*: any */) {
   $core().emit(event, ...args)
 }
 
-function $registerToGlobal(obj /*: any */, ...prefixes /*: Array<any> */) {
+function $registerToGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
   $core().loadObjectToGlobal(obj, ...prefixes)
 }
 

@@ -19,14 +19,21 @@ export interface StarterApi {
   +core: ?InternalCoreApi;
   +events: any;
 }
+
+interface InternalStarterApi extends StarterApi {
+  __rootDir: ?string;
+  __port: number;
+  __serverApi: ?ServerApi;
+  __core: ?InternalCoreApi;
+}
 */
 
-export default class Starter /*:: implements StarterApi */ {
+export default class Starter /*:: implements InternalStarterApi */ {
 
-  __rootDir /*: ?string */ = null
-  __port /*: number */ = 3000
-  __serverApi /*: ?ServerApi */ = null
-  __core /*: InternalCoreApi | void */ = undefined
+  __rootDir= null
+  __port = 3000
+  __serverApi = null
+  __core = null
 
   constructor(options /*: Options */) {
     options = options || {}
