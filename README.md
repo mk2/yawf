@@ -6,13 +6,13 @@
 
 # How tu run
 
-## ready for play
+## Ready for development
 ```
 npm i
 npm run packageInstall
 ```
 
-## run demo project
+## Run demo project
 ```
 cd ./packages/yawf-demo-project
 node app.js

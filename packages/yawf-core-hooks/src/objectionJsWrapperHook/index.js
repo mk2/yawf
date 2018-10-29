@@ -24,7 +24,7 @@ export default class extends Hook {
     const prefix = $hookConfig(this).globalPrefix
     this.knex = Knex($hookConfig(this).sqlite)
     Model.knex(this.knex)
-    $registerToGlobal({ Model }, prefix)
+    $registerToGlobal({ Model })
     const models = await $loadFiles('app', 'models')
     for (let key in models) {
       const regularModelName = _.upperFirst(key)

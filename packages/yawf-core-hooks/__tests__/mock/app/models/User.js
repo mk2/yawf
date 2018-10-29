@@ -1,2 +1,2 @@
-module.exports = class extends objection.Model {
+module.exports = class extends Model {
 }
