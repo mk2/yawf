@@ -1,6 +1,5 @@
 // @flow
 
-import '@babel/register'
 import EventEmitter from 'events'
 import FrameworkEvents from './framework-events'
 import path from 'path'
@@ -8,7 +7,7 @@ import { fs } from './util'
 import _ from 'lodash'
 import { loadFiles } from './util'
 import appUtils from './forApp/util'
-import config from './config'
+import defaultConfig from './config'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -45,13 +44,13 @@ export interface CoreApi {
   delete(RouteFunctionArguments): void;
   play(number, Function): void;
   reloadGlobal(): void;
-  loadAppFiles(): ?Promise<any>;
-  bootstrap(): ?Promise<any>;
+  bootstrap(): void;
   initialize(): ?Promise<any>;
   loadHooks({ [string]: InternalHookApi }): void;
   on(any, Function): CoreApi;
   emit(any, ...args: Array<any>): boolean;
   loadObjectToGlobal(any): void;
+  +global: any;
 }
 
 export interface InternalCoreApi extends CoreApi {
@@ -59,7 +58,6 @@ export interface InternalCoreApi extends CoreApi {
   __logger: any;
   __config: any;
   __actions: { [string]: any };
-  __helpers: { [string]: any };
   __hooks: { [string]: InternalHookApi };
   __serverApi: ?ServerApi;
   __rootDir: ?string;
@@ -74,7 +72,6 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __logger = console
   __config = {}
   __actions = {}
-  __helpers = {}
   __hooks = {}
   __serverApi = null
   __rootDir = null
@@ -86,12 +83,16 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__serverApi = serverApi
     this.__rootDir = rootDir
     this.__config = {
-      ...config,
+      ...defaultConfig,
       ...options
     }
     this.__events = {
       ...FrameworkEvents
     }
+  }
+
+  get global() {
+    return this.__global
   }
 
   on(event /*: any */, listenFn /*: Function */) /*: this */ {
@@ -105,7 +106,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   get({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.get(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
+      await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
   }
@@ -113,7 +114,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   post({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.post(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
+      await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
   }
@@ -121,7 +122,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   put({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.put(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
+      await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
   }
@@ -129,7 +130,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   delete({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.delete(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      await this.wrapActionFnWithCustomGlobal(actionFn)(req, res)
+      await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res)
       return next()
     })
   }
@@ -139,7 +140,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__serverApi.listen(port, messageFn)
   }
 
-  wrapActionFnWithCustomGlobal(actionFn /*: ActionFn */) {
+  __wrapActionFnWithCustomGlobal(actionFn /*: ActionFn */) {
     return async (req /*: any */, res /*: any */) => {
       try {
         await actionFn(req, res)
@@ -150,47 +151,43 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
   reloadGlobal() {
-    this.unloadFromGlobal()
-    this.loadToGlobal()
+    this.__unloadBaseFromGlobal()
+    this.__loadBaseToGlobal()
   }
 
-  loadToGlobal() {
-    this.loadCoreToGlobal()
-    this.loadUtilityMethodsToGlobal()
-    this.loadHelpersToGlobal()
+  __loadBaseToGlobal() {
+    this.__loadCoreToGlobal()
+    this.__loadUtilityMethodsToGlobal()
   }
 
-  unloadFromGlobal() {
-    this.unloadHelpersFromGlobal()
-    this.unloadUtilityMethodsFromGlobal()
-    this.unloadCoreFromGlobal()
+  __unloadBaseFromGlobal() {
+    this.__unloadUtilityMethodsFromGlobal()
+    this.__unloadCoreFromGlobal()
   }
 
-  loadCoreToGlobal() {
-    global[this.__config.app.globalName] = this
+  __loadCoreToGlobal() {
+    if (this.__config.hateGlobal) return
+    this.loadObjectToGlobal({
+      [this.__config.app.globalName]: this
+    })
   }
 
-  unloadCoreFromGlobal() {
-    delete global[this.__config.app.globalName]
+  __unloadCoreFromGlobal() {
+    if (this.__config.hateGlobal) return
+    this.unloadObjectFromGlobal({
+      [this.__config.app.globalName]: this
+    })
   }
 
-  loadUtilityMethodsToGlobal() {
+  __loadUtilityMethodsToGlobal() {
     this.loadObjectToGlobal(appUtils)
   }
 
-  unloadUtilityMethodsFromGlobal() {
+  __unloadUtilityMethodsFromGlobal() {
     this.unloadObjectFromGlobal(appUtils)
   }
 
-  loadHelpersToGlobal() {
-    this.loadObjectToGlobal(this.__helpers)
-  }
-
-  unloadHelpersFromGlobal() {
-    this.unloadObjectFromGlobal(this.__helpers)
-  }
-
-  loadObjectToGlobal(obj /*: any */, prefixes /*: ?Array<string> */) {
+  loadObjectToGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
     let globalTarget = global
     let nonGlobalTarget = this.__global
     if (prefixes) {
@@ -228,14 +225,13 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  async loadAppFiles() {
-    await this.loadConfigFiles()
-    await this.loadAppHooks()
-    await this.loadAppControllers()
-    await this.loadAppHelpers()
+  async __loadAppFiles() {
+    await this.__loadConfigFiles()
+    await this.__loadAppHooks()
+    await this.__loadAppControllers()
   }
 
-  async loadConfigFiles() {
+  async __loadConfigFiles() {
     try {
       const config = await loadFiles(this.__rootDir, this.__config.app.configDir)
       this.__config = {
@@ -249,7 +245,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
 
-  async loadAppControllers() {
+  async __loadAppControllers() {
     let actions /*: any */ = {}
     try {
       actions = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.controllersDir)
@@ -259,11 +255,14 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
 
     for (let name in actions) {
+      if (this.__config.hateGlobal) {
+        actions.__proto__['global'] = this.global
+      }
       this.__actions[name] = new actions[name]()
     }
   }
 
-  async loadAppHooks() {
+  async __loadAppHooks() {
     let hooks /*: any */ = {}
     try {
       hooks = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.hooksDir)
@@ -275,31 +274,17 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.loadHooks(hooks)
   }
 
-  async loadAppHelpers() {
-    let helpers /*: any */ = {}
-    try {
-      helpers = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.helpersDir)
-    } catch (e) {
-      this.emit(this.__events.core.didHappenError, e)
-      return
-    }
-
-    for (let name in helpers) {
-      this.__helpers[_.upperFirst(name)] = helpers[name]
-    }
-  }
-
   loadHooks(hooks /*: any */) {
     for (let name in hooks) {
       try {
-        this.loadHook(name, hooks[name])
+        this.__loadHook(name, hooks[name])
       } catch (e) {
         this.emit(this.__events.core.didHappenError, e)
       }
     }
   }
 
-  loadHook(hookName /*: string */, hookClass /*: any */) {
+  __loadHook(hookName /*: string */, hookClass /*: any */) {
     const regularHookName = _.camelCase(hookName)
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Succeeded}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Failed}`] = Symbol()
@@ -325,6 +310,9 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Failed}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Did}`] = Symbol()
 
+    if (this.__config.hateGlobal) {
+      hookClass.__proto__['global'] = this.global
+    }
     try {
       const hook = new hookClass()
       hook.__name = regularHookName
@@ -335,7 +323,51 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  bindActionsToRoutes() {
+  bootstrap() {
+    try {
+      this.__loadBaseToGlobal()
+    } catch (e) {
+      this.emit(this.__events.core.didHappenError, e)
+      throw e
+    }
+  }
+
+  async initialize() {
+    try {
+      this.__callHookDefaultsMethods()
+      this.__callHookConfigureMethods()
+      await this.__callHookInitializeMethods()
+      this.__callHookRegisterActionsMethods()
+      this.__callHookBindActionsToRoutesMethods()
+      this.__checkAllHooksLoadedSuccessfully()
+      this.__bindActionsToRoutes()
+      await this.__loadAppFiles()
+      this.__applyLoadedConfig()
+      this.reloadGlobal()
+    } catch (e) {
+      this.emit(this.__events.core.didHappenError, e)
+      throw e
+    }
+  }
+
+  __applyLoadedConfig() {
+    this.__configureViewEngine()
+    if (this.__serverApi) {
+      for (let middleware of this.__middlewares) {
+        this.__serverApi.use(middleware)
+      }
+    }
+  }
+
+  __configureViewEngine() {
+    if (!this.__config.viewTemplate.engine) return
+    if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
+
+    if (!this.__serverApi) return
+    this.__serverApi.set('view engine', this.__config.viewTemplate.engine)
+  }
+
+  __bindActionsToRoutes() {
     for (let route in this.__config.routes) {
       const [_method, path] = route.split(' ')
       const [clazz, clazzMethod] = this.__config.routes[route].split('.')
@@ -359,50 +391,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  configureViewEngine() {
-    if (!this.__config.viewTemplate.engine) return
-    if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
-
-    if (!this.__serverApi) return
-    this.__serverApi.set('view engine', this.__config.viewTemplate.engine)
-  }
-
-  async bootstrap() {
-    try {
-      await this.loadAppFiles()
-      this.loadToGlobal()
-    } catch (e) {
-      this.emit(this.__events.core.didHappenError, e)
-      throw e
-    }
-  }
-
-  async initialize() {
-    try {
-      this.callHookDefaultsMethods()
-      this.configure()
-      this.callHookConfigureMethods()
-      await this.callHookInitializeMethods()
-      this.callHookRegisterActionsMethods()
-      this.callHookBindActionsToRoutesMethods()
-      this.checkAllHooksLoadedSuccessfully()
-      this.bindActionsToRoutes()
-    } catch (e) {
-      this.emit(this.__events.core.didHappenError, e)
-      throw e
-    }
-  }
-
-  configure() {
-    this.configureViewEngine()
-    if (this.__serverApi) {
-      for (let middleware of this.__middlewares) {
-        this.__serverApi.use(middleware)
-      }
-    }
-  }
-
-  callHookDefaultsMethods() {
+  __callHookDefaultsMethods() {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.defaults) return
@@ -419,7 +408,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  callHookConfigureMethods() {
+  __callHookConfigureMethods() {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.configure) return
@@ -439,7 +428,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  callHookRegisterActionsMethods() {
+  __callHookRegisterActionsMethods() {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.registerActions) return
@@ -457,7 +446,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
 
-  callHookBindActionsToRoutesMethods() {
+  __callHookBindActionsToRoutesMethods() {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.bindActionsToRoutes) return
@@ -474,7 +463,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  async callHookInitializeMethods() {
+  async __callHookInitializeMethods() {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.initialize) return
@@ -491,7 +480,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  checkAllHooksLoadedSuccessfully() {
+  __checkAllHooksLoadedSuccessfully() {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (hook.__err) {

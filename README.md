@@ -1,19 +1,19 @@
-# yawf
-TBD
+# yawf - Yet Another Web Framework
+
+- Simple and Easy
+- ESModule oriented
+- Inspired By Sails.js
 
 # How tu run
 
 ## ready for play
 ```
-npm i -g lerna
 npm i
-npm run packageInstall
-lerna link
 npm run packageInstall
 ```
 
-## run (TBD)
+## run demo project
 ```
-cd ./packages/yawf-core/__tests__
-node ../../../../app.js
+cd ./packages/yawf-demo-project
+node app.js
 ```

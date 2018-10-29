@@ -9,17 +9,22 @@ export default class extends Hook {
 
   defaults() {
     return {
-      client: 'sqlite3',
-      useNullAsDefault: true,
-      connection: {
-        filename: 'yawf.sqlite3'
-      }
+      sqlite: {
+        client: 'sqlite3',
+        useNullAsDefault: true,
+        connection: {
+          filename: 'yawf.sqlite3'
+        }
+      },
+      globalPrefix: 'objection'
     }
   }
 
   async initialize() {
-    this.knex = Knex($hookConfig(this))
+    const prefix = $hookConfig(this).globalPrefix
+    this.knex = Knex($hookConfig(this).sqlite)
     Model.knex(this.knex)
+    $registerToGlobal({ Model }, prefix)
     const models = await $loadFiles('app', 'models')
     for (let key in models) {
       const regularModelName = _.upperFirst(key)

@@ -11,7 +11,7 @@ export default class extends Hook {
   }
 
   async initialize() {
-    $addMiddleware(middleware(webpack()))
+    $addMiddleware(middleware(webpack({})))
   }
 
 }

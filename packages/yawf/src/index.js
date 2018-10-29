@@ -9,7 +9,7 @@ export async function start() {
   starter.core.on(starter.events.core.didHappenError, (e) => {
     starter.logger.error(e)
   })
-  await starter.bootstrap()
+  starter.bootstrap()
   loadCoreHooks(starter.core)
   await starter.initialize()
   starter.start()

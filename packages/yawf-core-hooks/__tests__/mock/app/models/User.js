@@ -1,4 +1,2 @@
-const { Model } = require('objection')
-
-module.exports = class extends Model {
+module.exports = class extends objection.Model {
 }

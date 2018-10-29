@@ -5,14 +5,19 @@
     "prebuild": "lerna exec --parallel -- rimraf lib",
     "build": "lerna exec --parallel -- babel src -d lib --config-file ../../babel.config.js",
     "watch": "lerna exec --parallel -- babel src -d lib --config-file ../../babel.config.js -w",
-    "clean": "lerna exec --parallel -- rimraf node_modules",
-    "packageInstall": "lerna bootstrap; lerna exec --parallel -- npm i",
+    "cleanTgz": "lerna exec --parallel -- rimraf *.tgz",
+    "cleanNodeModules": "lerna exec --parallel -- rimraf node_modules",
+    "cleanLib": "lerna exec --parallel -- rimraf lib",
+    "cleanPackageLockJson": "lerna exec --parallel -- rimraf package-lock.json",
+    "clean": "npm run cleanNodeModules; npm run cleanPackageLockJson; npm run cleanLib; npm run cleanTgz",
+    "packageInstall": "lerna bootstrap",
     "packageTest": "npm run build; lerna run test",
     "flow": "flow"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
+    "@babel/register": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-export-default-from": "^7.0.0",
     "@babel/plugin-syntax-import-meta": "^7.0.0",
@@ -25,5 +30,6 @@
     "lerna": "^3.4.2",
     "regenerator-runtime": "^0.12.1",
     "rimraf": "^2.6.2"
-  }
+  },
+  "dependencies": {}
 }

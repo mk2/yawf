@@ -18,6 +18,7 @@ export interface StarterApi {
   +port: number;
   +core: ?InternalCoreApi;
   +events: any;
+  +global: any;
 }
 
 interface InternalStarterApi extends StarterApi {
@@ -71,12 +72,17 @@ export default class Starter /*:: implements InternalStarterApi */ {
     return this.core.__logger
   }
 
-  async bootstrap() {
+  get global() {
+    if (!this.core) return global
+    return this.core.global
+  }
+
+  bootstrap() {
     if (!this.core) return
     const core = this.core
     try {
       core.emit(this.events.core.willBootstrap)
-      await core.bootstrap()
+      core.bootstrap()
       core.emit(this.events.core.didBootstrap)
     } catch (e) {
       this.core.emit(this.events.core.didHappenError, e)

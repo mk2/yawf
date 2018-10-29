@@ -17,7 +17,9 @@ export default {
   $loadFiles,
   $registerToGlobal,
   $hooks,
-  $loadHooks
+  $loadHooks,
+  $middlewares,
+  $addMiddleware
 }
 
 function $core() /*: InternalCoreApi */ {
@@ -76,7 +78,7 @@ function $on(event /*: any */, listenFn /*: Function */) {
   $core().on(event, listenFn)
 }
 
-async function $loadFiles(...filesDir /*: Array<string> */) /*: { [string]: any }*/ {
+async function $loadFiles(...filesDir /*: Array<string> */) /*: Promise<{ [string]: any }> */ {
   const objMap = await loadFiles($core().__rootDir, ...filesDir)
   return objMap
 }
