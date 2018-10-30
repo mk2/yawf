@@ -17,3 +17,10 @@ npm run packageInstall
 cd ./packages/yawf-demo-project
 node app.js
 ```
+
+## Make project by @yawf/cli
+```
+npm i -g @yawf/yawf-cli
+mkdir project_dir; cd project_dir
+yawf generate app
+```

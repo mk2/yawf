@@ -1,11 +1,14 @@
 {
   "name": "@yawf/yawf-cli",
   "version": "0.1.3",
-  "description": "Yet Another Web Framework",
+  "description": "> TODO: description",
   "author": "mk2 <mk2@mk2.red>",
-  "homepage": "",
+  "homepage": "https://github.com/mk2/yawf#readme",
   "license": "ISC",
   "main": "lib/index.js",
+  "bin": {
+    "yawf": "lib/cli.js"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -13,11 +16,24 @@
   "files": [
     "lib"
   ],
-  "scripts": {
-    "test": "jest --config ./jest.config.js --coverage"
-  },
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "dd9b68a9276249aee00bdd1672bcdfd6c56d7b22"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk2/yawf.git"
+  },
+  "scripts": {
+    "test": "jest --config ./jest.config.js --coverage"
+  },
+  "bugs": {
+    "url": "https://github.com/mk2/yawf/issues"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.1.3",
+    "@babel/parser": "^7.1.3",
+    "cross-spawn": "^6.0.5",
+    "inquirer": "^6.2.0",
+    "yargs": "^12.0.2"
+  }
 }

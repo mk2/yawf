@@ -141,11 +141,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
   __wrapActionFnWithCustomGlobal(actionFn /*: ActionFn */) {
-    return async (req /*: any */, res /*: any */) => {
+    return async (req /*: Req */, res /*: Res */) => {
       try {
         await actionFn(req, res)
       } catch (e) {
-        // do nothing
+        res.render('error')
       }
     }
   }
@@ -228,16 +228,13 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppFiles() {
     await this.__loadConfigFiles()
     await this.__loadAppHooks()
-    await this.__loadAppControllers()
+    await this.__loadAppActions()
   }
 
   async __loadConfigFiles() {
     try {
       const config = await loadFiles(this.__rootDir, this.__config.app.configDir)
-      this.__config = {
-        ...this.__config,
-        ...config
-      }
+      _.merge(this.__config, config)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return
@@ -245,10 +242,10 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
 
-  async __loadAppControllers() {
+  async __loadAppActions() {
     let actions /*: any */ = {}
     try {
-      actions = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.controllersDir)
+      actions = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.actionsDir)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return
@@ -336,13 +333,13 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     try {
       this.__callHookDefaultsMethods()
       this.__callHookConfigureMethods()
+      await this.__loadAppFiles()
       await this.__callHookInitializeMethods()
       this.__callHookRegisterActionsMethods()
       this.__callHookBindActionsToRoutesMethods()
       this.__checkAllHooksLoadedSuccessfully()
-      this.__bindActionsToRoutes()
-      await this.__loadAppFiles()
       this.__applyLoadedConfig()
+      this.__bindActionsToRoutes()
       this.reloadGlobal()
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
@@ -352,6 +349,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __applyLoadedConfig() {
     this.__configureViewEngine()
+    this.__configureViews()
     if (this.__serverApi) {
       for (let middleware of this.__middlewares) {
         this.__serverApi.use(middleware)
@@ -362,9 +360,16 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __configureViewEngine() {
     if (!this.__config.viewTemplate.engine) return
     if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
-
     if (!this.__serverApi) return
+
     this.__serverApi.set('view engine', this.__config.viewTemplate.engine)
+  }
+
+  __configureViews() {
+    if (!this.__config.app.viewsDirs) return
+    if (!this.__serverApi) return
+
+    this.__serverApi.set('views', this.__config.app.viewsDirs)
   }
 
   __bindActionsToRoutes() {
@@ -414,10 +419,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       if (!hook.configure) return
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Will}`])
       try {
-        this.__config.hook[hookName] = {
-          ...this.__config.hook[hookName],
-          ...hook.configure()
-        }
+        _.merge(this.__config.hook[hookName], hook.configure())
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Succeeded}`])
       } catch (e) {
         hook.__err = e

@@ -15,11 +15,13 @@ export default {
   $on,
   $events,
   $loadFiles,
-  $registerToGlobal,
+  $registerGlobal,
   $hooks,
   $loadHooks,
   $middlewares,
-  $addMiddleware
+  $addMiddleware,
+  $rootDir,
+  $deDef
 }
 
 function $core() /*: InternalCoreApi */ {
@@ -66,7 +68,7 @@ function $emit(event /*: any */, ...args /*: any */) {
   $core().emit(event, ...args)
 }
 
-function $registerToGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
+function $registerGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
   $core().loadObjectToGlobal(obj, ...prefixes)
 }
 
@@ -82,3 +84,12 @@ async function $loadFiles(...filesDir /*: Array<string> */) /*: Promise<{ [strin
   const objMap = await loadFiles($core().__rootDir, ...filesDir)
   return objMap
 }
+
+function $rootDir() {
+  return $core().__rootDir
+}
+
+function $deDef(mod /*: any */) {
+  return mod.default ? mod.default : mod
+}
+

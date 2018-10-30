@@ -1,3 +1,4 @@
 export default {
-  'GET /': 'index.index'
+  'GET /api/demo': 'demo.index',
+  'GET /': 'demo.page'
 }

@@ -1,6 +1,6 @@
 export default {
   /*
-   * options
+   * starter options
    */
   hateGlobal: false,
 
@@ -10,11 +10,12 @@ export default {
   app: {
     globalName: '__frameworkCore',
     configDir: 'config',
-    appDir: 'app',
-    controllersDir: 'controllers',
-    helpersDir: 'helpers',
+    appDir: 'server',
+    actionsDir: 'actions',
     hooksDir: 'hooks',
-    viewEngines: ['pug']
+    viewEngines: ['pug'],
+    clientDir: 'client',
+    viewsDirs: ['client', 'views']
   },
   hook: {},
   hookEventName: {

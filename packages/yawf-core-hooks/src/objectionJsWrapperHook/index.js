@@ -24,8 +24,8 @@ export default class extends Hook {
     const prefix = $hookConfig(this).globalPrefix
     this.knex = Knex($hookConfig(this).sqlite)
     Model.knex(this.knex)
-    $registerToGlobal({ Model })
-    const models = await $loadFiles('app', 'models')
+    $registerGlobal({ Model })
+    const models = await $loadFiles('server', 'models')
     for (let key in models) {
       const regularModelName = _.upperFirst(key)
       const model = models[key]
@@ -40,10 +40,10 @@ export default class extends Hook {
       models[regularModelName] = model
       delete models[key]
     }
-    $registerToGlobal(models)
+    $registerGlobal(models)
     const globalFuncs = {}
     globalFuncs['$knex'] = (() => this.knex).bind(this)
-    $registerToGlobal(globalFuncs)
+    $registerGlobal(globalFuncs)
   }
 
 }

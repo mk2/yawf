@@ -6,8 +6,8 @@ describe('exported properties tests', () => {
     expect(yawf.Hook).toBeDefined()
   })
 
-  test('start function exported', () => {
-    expect(yawf.start).toBeDefined()
+  test('yawf function exported', () => {
+    expect(yawf.yawf).toBeDefined()
   })
 
 })

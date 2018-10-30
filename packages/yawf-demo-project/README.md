@@ -1,11 +1,13 @@
-# `yawf-demo-project`
+# yawf-demo-project
 
-> TODO: description
-
-## Usage
+## How to play
 
 ```
-const yawfDemoProject = require('yawf-demo-project');
-
-// TODO: DEMONSTRATE API
+# Top directory's node_modules are installed by `lerna bootstrap`, so we have to install only client node_modules.
+cd client
+npm i
+# Go to parent
+cd ..
+# Run demo project
+npm start
 ```

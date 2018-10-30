@@ -1,7 +1,2 @@
-'use strict';
-
-module.exports = cli;
-
-function cli() {
-    // TODO
-}
+export generate from './generate'
+export start from './start'
