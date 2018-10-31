@@ -1,7 +1,7 @@
 {
   "name": "@yawf/yawf-cli",
   "version": "0.1.7",
-  "description": "yawf scaffolding tool for command line",
+  "description": "yawf generator tool for command line",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-cli",
   "license": "ISC",
@@ -17,6 +17,9 @@
     "lib",
     "templates"
   ],
+  "engines": {
+    "node": ">= 10.13.0"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -14,6 +14,9 @@
   "files": [
     "lib"
   ],
+  "engines": {
+    "node": ">= 10.13.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mk2/yawf.git"
