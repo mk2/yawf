@@ -233,7 +233,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   async __loadConfigFiles() {
     try {
-      const configFiles = glob.sync(`${this.__config.app.configDir}/**/*.js`)
+      const configFiles = glob.sync(path.join(this.__config.app.configDir, '**', '*.js'))
       const config = (await loadFiles(this.__rootDir, ...configFiles)).config
       _.merge(this.__config, config)
     } catch (e) {
@@ -401,6 +401,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __bind404ActionsToRoutes() {
     const path = '*'
     const actionFn = (req, res) => {
+      if (res.headersSent) return
       res.status(404)
       res.render('error', { statusCode: 404 })
     }
