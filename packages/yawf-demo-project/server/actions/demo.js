@@ -15,4 +15,8 @@ export default class {
     res.render('index')
   }
 
+  topPage(req, res) {
+    res.render('top')
+  }
+
 }
