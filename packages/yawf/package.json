@@ -1,6 +1,6 @@
 {
   "name": "@yawf/yawf",
-  "version": "0.1.5",
+  "version": "0.1.8",
   "description": "yawf - Yet Another Web Framework",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf",
@@ -30,8 +30,8 @@
     "url": "https://github.com/mk2/yawf/issues"
   },
   "dependencies": {
-    "@yawf/yawf-core": "^0.1.5",
-    "@yawf/yawf-core-hooks": "^0.1.5"
+    "@yawf/yawf-core": "^0.1.8",
+    "@yawf/yawf-core-hooks": "^0.1.8"
   },
   "publishConfig": {
     "access": "public"

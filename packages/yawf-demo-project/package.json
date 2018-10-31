@@ -1,7 +1,7 @@
 {
   "name": "yawf-demo-project",
   "private": true,
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "yawf demo project",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-demo-project",
@@ -33,7 +33,7 @@
     "@babel/plugin-transform-flow-comments": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/register": "^7.0.0",
-    "@yawf/yawf": "^0.1.5",
+    "@yawf/yawf": "^0.1.8",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-plugin-dynamic-import-node": "^2.2.0"
   }
