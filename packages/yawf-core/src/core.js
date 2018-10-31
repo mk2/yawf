@@ -502,8 +502,10 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       const hook = this.__hooks[hookName]
       if (hook.__err) {
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Failed}`], hook.__err)
+        this.emit(this.__events.core.hookFailedLoad, { hookName: hook.__name })
       } else {
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Succeeded}`])
+        this.emit(this.__events.core.hookSucceededLoad, { hookName: hook.__name })
       }
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Did}`])
       hook.__isLoaded = true

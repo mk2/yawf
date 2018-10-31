@@ -16,6 +16,12 @@ export async function yawf(options /*: YawfOptions */) {
   starter.core.on(starter.events.core.didHappenError, (e) => {
     starter.logger.error(e)
   })
+  starter.core.on(starter.events.core.hookSucceededLoad, ({ hookName }) => {
+    starter.logger.log(`A hook(${hookName}) was successfully loaded.`)
+  })
+  starter.core.on(starter.events.core.hookFailedLoad, ({ hookName }) => {
+    starter.logger.error(`A hook(${hookName}) was failed to load.`)
+  })
   starter.bootstrap()
   if (useCoreHooks) {
     loadCoreHooks(starter.core)

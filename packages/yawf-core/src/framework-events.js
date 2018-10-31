@@ -11,7 +11,9 @@ export default {
     willStart: Symbol(),
     didStart: Symbol(),
     ready: Symbol(),
-    didHappenError: Symbol()
+    didHappenError: Symbol(),
+    hookSucceededLoad: Symbol(),
+    hookFailedLoad: Symbol()
   },
 
   /*
