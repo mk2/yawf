@@ -1,7 +1,7 @@
 import ormHook from './ormHook'
-import webpackDevMiddlewareHook from './webpackDevMiddlewareHook'
+import webpackHook from './webpackHook'
 
 export default {
   ormHook,
-  webpackDevMiddlewareHook
+  webpackHook
 }
