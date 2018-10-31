@@ -1,7 +1,7 @@
-import objectionJsWrapperHook from './objectionJsWrapperHook'
+import ormHook from './ormHook'
 import webpackDevMiddlewareHook from './webpackDevMiddlewareHook'
 
 export default {
-  objectionJsWrapperHook,
+  ormHook,
   webpackDevMiddlewareHook
 }

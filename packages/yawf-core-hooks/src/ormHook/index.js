@@ -1,5 +1,3 @@
-import Knex from 'knex'
-import { Model } from 'objection'
 import { Hook } from '@yawf/yawf-core'
 import _ from 'lodash'
 
