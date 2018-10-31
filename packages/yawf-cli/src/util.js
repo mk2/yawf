@@ -14,3 +14,8 @@ export function tpl(...pathList) {
 export function genTpl(...pathList) {
   return pathr(process.cwd(), ...pathList)
 }
+
+export async function writeTpl(srcPath, tgtPath) {
+  const srcContent = await fs.readFile(srcPath)
+  await fs.writeFile(tgtPath, srcContent)
+}

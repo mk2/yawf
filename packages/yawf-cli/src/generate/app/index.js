@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 import path from 'path'
-import { fs, tpl, pathr, genTpl } from '../../util'
+import { fs, tpl, pathr, genTpl, writeTpl } from '../../util'
 import spawn from 'cross-spawn'
 
 const questions = [
@@ -20,31 +20,25 @@ export default async function() {
   } = await inquirer.prompt(questions)
 
   const packageJson = JSON.parse(await fs.readFile(tpl('package.json')))
-  const appJs = await fs.readFile(tpl('app.js'))
-  const babelConfigJs = await fs.readFile(tpl('babel.config.js'))
-  const routesJs = await fs.readFile(tpl('config', 'routes.js'))
-  const viewTemplate = await fs.readFile(tpl('config', 'viewTemplate.js'))
-  const topJs = await fs.readFile(tpl('server', 'actions', 'top.js'))
-  const topPug = await fs.readFile(tpl('views', 'top.pug'))
 
   packageJson.name = app_name
   await fs.writeFile(genTpl('package.json'), JSON.stringify(packageJson, null, '  '))
-  await fs.writeFile(genTpl('babel.config.js'), babelConfigJs)
-  await fs.writeFile(genTpl('app.js'), appJs)
+  await writeTpl(tpl('babel.config.js'), genTpl('babel.config.js'))
+  await writeTpl(tpl('app.js'), genTpl('app.js'))
 
   await fs.mkdir(genTpl('server', 'actions'), { recursive: true })
-  await fs.writeFile(genTpl('server', 'actions', 'top.js'), topJs)
+  await writeTpl(tpl('server', 'actions', 'top.js'), genTpl('server', 'actions', 'top.js'))
 
   await fs.mkdir(genTpl('server', 'models'), { recursive: true })
   await fs.mkdir(genTpl('server', 'hooks'), { recursive: true })
 
   await fs.mkdir(genTpl('config'), { recursive: true })
-  await fs.writeFile(genTpl('config', 'route.js'), routesJs)
-  await fs.writeFile(genTpl('config', 'viewTemplate.js'), viewTemplate)
+  await writeTpl(tpl('config', 'routes.js'), genTpl('config', 'routes.js'))
+  await writeTpl(tpl('config', 'viewTemplate.js'), genTpl('config', 'viewTemplate.js'))
 
   await fs.mkdir(genTpl('client'), { recursive: true })
   await fs.mkdir(genTpl('views'), { recursive: true })
-  await fs.writeFile(genTpl('views', 'top.pug'), topPug)
+  await writeTpl(tpl('views', 'top.pug'), genTpl('views', 'top.pug'))
 
   const npmInstallCmd = spawn('npm', ['install'], { stdio: 'inherit' })
   npmInstallCmd.on('close', () => {
