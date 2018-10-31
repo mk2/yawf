@@ -5,9 +5,10 @@ import FrameworkEvents from './framework-events'
 import path from 'path'
 import { fs } from './util'
 import _ from 'lodash'
-import { loadFiles } from './util'
+import { loadDirFiles, loadFiles } from './util'
 import appUtils from './forApp/util'
 import defaultConfig from './config'
+import glob from 'glob'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -232,7 +233,8 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   async __loadConfigFiles() {
     try {
-      const config = await loadFiles(this.__rootDir, this.__config.app.configDir)
+      const configFiles = glob.sync(`${this.__config.app.configDir}/**/*.js`)
+      const config = (await loadFiles(this.__rootDir, ...configFiles)).config
       _.merge(this.__config, config)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
@@ -244,7 +246,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppActions() {
     let actions /*: any */ = {}
     try {
-      actions = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.actionsDir)
+      actions = await loadDirFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.actionsDir)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return
@@ -261,7 +263,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppHooks() {
     let hooks /*: any */ = {}
     try {
-      hooks = await loadFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.hooksDir)
+      hooks = await loadDirFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.hooksDir)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return

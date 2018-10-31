@@ -5,7 +5,7 @@ import type { Middleware } from 'express'
 import type { InternalCoreApi } from '../core'
  */
 
-import { loadFiles } from '../util'
+import { loadDirFiles } from '../util'
 
 export default {
   $config,
@@ -14,7 +14,7 @@ export default {
   $error,
   $on,
   $events,
-  $loadFiles,
+  $loadDirFiles,
   $registerGlobal,
   $hooks,
   $loadHooks,
@@ -80,8 +80,8 @@ function $on(event /*: any */, listenFn /*: Function */) {
   $core().on(event, listenFn)
 }
 
-async function $loadFiles(...filesDir /*: Array<string> */) /*: Promise<{ [string]: any }> */ {
-  const objMap = await loadFiles($core().__rootDir, ...filesDir)
+async function $loadDirFiles(...filesDir /*: Array<string> */) /*: Promise<{ [string]: any }> */ {
+  const objMap = await loadDirFiles($core().__rootDir, ...filesDir)
   return objMap
 }
 

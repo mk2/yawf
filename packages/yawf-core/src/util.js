@@ -12,7 +12,11 @@ export function basename(pathstr /*: string */) {
   return path.basename(pathstr, ext)
 }
 
-export async function loadFiles(rootDir /*: ?string */, ...dir /*: Array<string> */) {
+export function dedef(obj) {
+  return obj.default ? obj.default : obj
+}
+
+export async function loadDirFiles(rootDir /*: ?string */, ...dir /*: Array<string> */) {
   if (!rootDir) return
 
   const objMap = {}
@@ -23,5 +27,38 @@ export async function loadFiles(rootDir /*: ?string */, ...dir /*: Array<string>
     objMap[_.camelCase(basename(file))] = obj.default ? obj.default : obj
   }
 
+  return objMap
+}
+
+export async function loadFiles(rootDir /*: ?string */, ...filePathList /*: Array<string> */) {
+  if (!rootDir || !filePathList || filePathList.length < 1) return
+
+  const objMap = {}
+  for (let filePath of filePathList) {
+    const obj = dedef(await import(path.resolve(rootDir, filePath)))
+    const dirname = path.dirname(filePath)
+    const filename = path.basename(filePath, '.js')
+    const isIndex = filename === 'index'
+
+    let parentTgt = null
+    let tgt = objMap
+    let lastKey = null
+    if (dirname) {
+      for (let key of dirname.split(path.sep)) {
+        key = _.camelCase(key) 
+        if (!tgt[key]) {
+          tgt[key] = {}
+        }
+        parentTgt = tgt
+        tgt = tgt[key]
+        lastKey = key
+      }
+    }
+    if (parentTgt && isIndex) {
+      parentTgt[lastKey] = obj
+    } else {
+      tgt[_.camelCase(filename)] = obj
+    }
+  }
   return objMap
 }
