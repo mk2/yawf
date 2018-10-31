@@ -1,9 +1,9 @@
 {
   "name": "@yawf/yawf-core",
   "version": "0.1.4",
-  "description": "Yet Another Web Framework",
+  "description": "yawf core program",
   "author": "mk2 <mk2@mk2.red>",
-  "homepage": "",
+  "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-core",
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
@@ -15,6 +15,9 @@
   ],
   "scripts": {
     "test": "jest --config ./jest.config.js --coverage"
+  },
+  "bugs": {
+    "url": "https://github.com/mk2/yawf/issues"
   },
   "dependencies": {
     "express": "^4.16.4",

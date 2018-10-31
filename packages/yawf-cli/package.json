@@ -1,9 +1,9 @@
 {
   "name": "@yawf/yawf-cli",
   "version": "0.1.4",
-  "description": "> TODO: description",
+  "description": "yawf scaffolding tool for command line",
   "author": "mk2 <mk2@mk2.red>",
-  "homepage": "https://github.com/mk2/yawf#readme",
+  "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-cli",
   "license": "ISC",
   "main": "lib/index.js",
   "bin": {
@@ -14,7 +14,8 @@
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "lib",
+    "templates"
   ],
   "publishConfig": {
     "access": "public"

@@ -1,13 +1,12 @@
 # yawf-demo-project
 
-## How to play
+## What's this?
 
-```
-# Top directory's node_modules are installed by `lerna bootstrap`, so we have to install only client node_modules.
-cd client
-npm i
-# Go to parent
-cd ..
-# Run demo project
-npm start
-```
+- Yet Another Web Framework
+- Simple and Easy
+- Express.js based
+- ESModule oriented
+
+## How to start?
+
+Please use `@yawf/yawf-cli` package for scaffolding yawf application. Looking for more informations, visit at [https://github.com/mk2/yawf](https://github.com/mk2/yawf).

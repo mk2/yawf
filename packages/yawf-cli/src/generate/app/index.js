@@ -24,6 +24,8 @@ export default async function() {
   const babelConfigJs = await fs.readFile(tpl('babel.config.js'))
   const routesJs = await fs.readFile(tpl('config', 'routes.js'))
   const viewTemplate = await fs.readFile(tpl('config', 'viewTemplate.js'))
+  const topJs = await fs.readFile(tpl('server', 'actions', 'top.js'))
+  const topPug = await fs.readFile(tpl('views', 'top.pug'))
 
   packageJson.name = app_name
   await fs.writeFile(genTpl('package.json'), JSON.stringify(packageJson, null, '  '))
@@ -31,6 +33,8 @@ export default async function() {
   await fs.writeFile(genTpl('app.js'), appJs)
 
   await fs.mkdir(genTpl('server', 'actions'), { recursive: true })
+  await fs.writeFile(genTpl('server', 'actions', 'top.js'), topJs)
+
   await fs.mkdir(genTpl('server', 'models'), { recursive: true })
   await fs.mkdir(genTpl('server', 'hooks'), { recursive: true })
 
@@ -40,6 +44,7 @@ export default async function() {
 
   await fs.mkdir(genTpl('client'), { recursive: true })
   await fs.mkdir(genTpl('views'), { recursive: true })
+  await fs.writeFile(genTpl('views', 'top.pug'), topPug)
 
   const npmInstallCmd = spawn('npm', ['install'], { stdio: 'inherit' })
   npmInstallCmd.on('close', () => {

@@ -2,9 +2,9 @@
   "name": "yawf-demo-project",
   "private": true,
   "version": "0.1.4",
-  "description": "> TODO: description",
+  "description": "yawf demo project",
   "author": "mk2 <mk2@mk2.red>",
-  "homepage": "https://github.com/mk2/yawf#readme",
+  "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-demo-project",
   "license": "ISC",
   "main": "app.js",
   "directories": {
@@ -20,9 +20,6 @@
   },
   "scripts": {
     "start": "node app.js"
-  },
-  "bugs": {
-    "url": "https://github.com/mk2/yawf/issues"
   },
   "dependencies": {
     "@babel/cli": "^7.1.2",

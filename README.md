@@ -13,14 +13,9 @@ npm run packageInstall
 ```
 
 ## Run demo project
-```
-cd ./packages/yawf-demo-project
-node app.js
-```
+
+See [https://github.com/mk2/yawf/tree/master/packages/yawf-demo-project](https://github.com/mk2/yawf/tree/master/packages/yawf-demo-project).
 
 ## Make project by @yawf/cli
-```
-npm i -g @yawf/yawf-cli
-mkdir project_dir; cd project_dir
-yawf generate app
-```
+
+See [https://github.com/mk2/yawf/tree/master/packages/yawf-cli](https://github.com/mk2/yawf/tree/master/packages/yawf-cli).

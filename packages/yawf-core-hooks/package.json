@@ -1,9 +1,9 @@
 {
   "name": "@yawf/yawf-core-hooks",
   "version": "0.1.4",
-  "description": "Yet Another Web Framework",
+  "description": "yawf hooks for basic usage",
   "author": "mk2 <mk2@mk2.red>",
-  "homepage": "",
+  "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-core-hooks",
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
@@ -16,19 +16,22 @@
   "scripts": {
     "test": "jest --config ./jest.config.js --coverage"
   },
+  "bugs": {
+    "url": "https://github.com/mk2/yawf/issues"
+  },
   "dependencies": {
     "@yawf/yawf-core": "^0.1.4",
     "knex": "^0.15.2",
     "lodash": "^4.17.11",
     "objection": "^1.4.0",
-    "sqlite3": "^4.0.3"
+    "sqlite3": "^4.0.3",
+    "webpack": "^4.23.1",
+    "webpack-dev-middleware": "^3.4.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "gitHead": "dd9b68a9276249aee00bdd1672bcdfd6c56d7b22",
   "devDependencies": {
-    "webpack": "^4.23.1",
-    "webpack-dev-middleware": "^3.4.0"
   }
 }

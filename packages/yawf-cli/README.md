@@ -1,11 +1,20 @@
-# `@yawf/yawf-cli`
+# @yawf/yawf-cli
 
-> TODO: description
+## What's this?
 
-## Usage
+- Yet Another Web Framework
+- Simple and Easy
+- Express.js based
+- ESModule oriented
+
+## How to start?
+
+### Let's start with new yawf project!
 
 ```
-const yawfCli = require('@yawf/yawf-cli');
-
-// TODO: DEMONSTRATE API
+# ... installed Node.js( > v.10) and npm
+npm i -g @yawf/yawf-cli
+mkdir project_dir; cd project_dir
+yawf g app
+npm start
 ```
