@@ -1,6 +1,6 @@
 {
   "name": "@yawf/yawf-core-hooks",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "yawf hooks for basic usage",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-core-hooks",
@@ -20,7 +20,7 @@
     "url": "https://github.com/mk2/yawf/issues"
   },
   "dependencies": {
-    "@yawf/yawf-core": "^0.1.4",
+    "@yawf/yawf-core": "^0.1.5",
     "knex": "^0.15.2",
     "lodash": "^4.17.11",
     "objection": "^1.4.0",
@@ -31,7 +31,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "dd9b68a9276249aee00bdd1672bcdfd6c56d7b22",
-  "devDependencies": {
-  }
+  "gitHead": "dd9b68a9276249aee00bdd1672bcdfd6c56d7b22"
 }
