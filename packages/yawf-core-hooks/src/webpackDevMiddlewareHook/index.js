@@ -14,7 +14,7 @@ export default class extends Hook {
 
   async initialize() {
     const clientFileDir = $config().app.clientDir
-    const webpackUserConfig = $deDef(await import(path.resolve($rootDir(), clientFileDir, $hookConfig(this).webpackConfigFile)))
+    const webpackUserConfig = await $import(path.resolve($rootDir(), clientFileDir, $hookConfig(this).webpackConfigFile))
     $addMiddleware(middleware(webpack({
       ...webpackUserConfig(),
       context: path.resolve($rootDir(), clientFileDir),

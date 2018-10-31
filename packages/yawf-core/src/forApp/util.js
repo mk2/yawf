@@ -21,7 +21,8 @@ export default {
   $middlewares,
   $addMiddleware,
   $rootDir,
-  $deDef
+  $deDef,
+  $import
 }
 
 function $core() /*: InternalCoreApi */ {
@@ -93,3 +94,6 @@ function $deDef(mod /*: any */) {
   return mod.default ? mod.default : mod
 }
 
+async function $import(path /*: string */) {
+  return $deDef(await import(path))
+}
