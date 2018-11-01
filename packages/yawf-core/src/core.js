@@ -107,28 +107,28 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   get({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.get(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      return await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res, next)
+      return await this.__wrapActionFn(actionFn)(req, res, next)
     })
   }
 
   post({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.post(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      return await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res, next)
+      return await this.__wrapActionFn(actionFn)(req, res, next)
     })
   }
 
   put({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.put(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      return await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res, next)
+      return await this.__wrapActionFn(actionFn)(req, res, next)
     })
   }
 
   delete({ path, actionFn } /*: RouteFunctionArguments */) {
     if (!this.__serverApi) return
     this.__serverApi.delete(path, async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      return await this.__wrapActionFnWithCustomGlobal(actionFn)(req, res, next)
+      return await this.__wrapActionFn(actionFn)(req, res, next)
     })
   }
 
@@ -137,15 +137,17 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__serverApi.listen(port, messageFn)
   }
 
-  __wrapActionFnWithCustomGlobal(actionFn /*: ActionFn */) {
+  __wrapActionFn(actionFn /*: ActionFn */) {
     return async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       try {
         await actionFn(req, res)
         return next()
       } catch (e) {
+        this.emit(this.__events.core.didHappenError, e)
         if (res.headersSent) return next(e)
         res.status(500)
         res.render('error', { statusCode: 500 })
+        return next()
       }
     }
   }
@@ -402,6 +404,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     const path = '*'
     const actionFn = (req, res) => {
       if (res.headersSent) return
+      this.emit(this.__events.core.didHappenError, new Error(`Route(${req.path}) has not an action.`))
       res.status(404)
       res.render('error', { statusCode: 404 })
     }

@@ -2,8 +2,9 @@ export default class {
 
   static definition() {
     return {
-      name: DataTypes.STRING
+      title:   DataTypes.STRING,
+      content: DataTypes.TEXT
     }
-
   }
+
 }

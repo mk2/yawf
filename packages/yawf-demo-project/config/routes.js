@@ -1,5 +1,6 @@
 export default {
-  'GET /api/demo': 'demo.index',
-  'GET /': 'demo.page',
-  'GET /top': 'demo.topPage'
+  'GET /': 'page.index',
+  'GET /top': 'page.top',
+  'POST /api/message': 'api.createMessage',
+  'GET /api/messages': 'api.getMessages'
 }

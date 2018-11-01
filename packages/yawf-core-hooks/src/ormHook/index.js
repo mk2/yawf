@@ -1,3 +1,4 @@
+import path from 'path'
 import Sequelize from 'sequelize'
 import { Hook } from '@yawf/yawf-core'
 import _ from 'lodash'
@@ -8,24 +9,45 @@ export default class extends Hook {
 
   defaults() {
     return {
+      databaseName: 'yawf-demo',
+      user: '',
+      password: '',
+      options: {
+        host: '',
+        dialect: 'sqlite',
+        storage: null,
+        operatorsAliases: false
+      }
     }
   }
 
   async initialize() {
-    this.sequelize = new Sequelize({ dialect: 'sqlite', storage: 'sample.sqlite3' })
+    const hookConfig = $hookConfig(this)
+    const defaultStorage = path.resolve(process.cwd(), $hookConfig(this).databaseName + '.db')
+    const dbName = hookConfig.databaseName
+    const dbUser = hookConfig.user
+    const dbUserPassword = hookConfig.password
+    const options = hookConfig.options
+    options.storage = options.storage || defaultStorage
+    this.sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
     $registerGlobal({
-      ColumnTypes: Sequelize.DataTypes
+      DataTypes: Sequelize.DataTypes,
+      Op: Sequelize.Op
     })
     const models = await $loadDirFiles('server', 'models')
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
-      const model = models[key]
-      models[regularModelName] = this.sequelize.define(regularModelName, model.schema())
+      const userModel = models[key]
+      const model = this.sequelize.define(regularModelName, userModel.definition())
+      model.sync()
+      models[regularModelName] = model
       delete models[key]
     }
     $registerGlobal(models)
     const globalFuncs = {}
     globalFuncs['$db'] = (() => this.sequelize).bind(this)
+    globalFuncs['$transaction'] = ((...args) => this.sequelize.transaction(...args)).bind(this)
+    globalFuncs['$query'] = ((...args) => this.sequelize.query(...args)).bind(this)
     $registerGlobal(globalFuncs)
   }
 
