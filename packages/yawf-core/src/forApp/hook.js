@@ -3,8 +3,8 @@
 /*::
 export interface HookApi {
   defaults(): any;
+  configure(): any;
   initialize(): ?Promise<any>;
-  configure(): ?Promise<any>;
   registerActions(): void;
   bindActionsToRoutes(): void;
 }
@@ -23,13 +23,16 @@ export default class Hook /*:: implements InternalHookApi */ {
   __err = null
 
   defaults() {
+    return {}
+  }
+
+  configure() {
+    return {}
   }
 
   async initialize() {
   }
 
-  async configure() {
-  }
 
   registerActions() {
   }

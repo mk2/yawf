@@ -31,21 +31,15 @@ function $core(envGlobal /*: any */) /*: InternalCoreApi */ {
 }
 
 function $config(envGlobal /*: any */) {
-  return () => {
-    return envGlobal.$core.__config
-  }
+  return () => envGlobal.$core.__config
 }
 
 function $hooks(envGlobal /*: any */) /*: { [string]: any } */ {
-  return () => {
-    return envGlobal.$core.__hooks
-  }
+  return envGlobal.$core.__hooks
 }
 
 function $hookConfig(envGlobal /*: any */) {
-  return (hook /*: any */) => {
-    return envGlobal.$config().hook[hook.__name]
-  }
+  return (hook /*: any */) => envGlobal.$config().hook[hook.__name]
 }
 
 function $log(envGlobal /*: any */) {
@@ -61,51 +55,35 @@ function $error(envGlobal /*: any */) {
 }
 
 function $events(envGlobal /*: any */) {
-  return () => {
-    return envGlobal.$core.__events
-  }
+  return () => envGlobal.$core.__events
 }
 
 function $middlewares(envGlobal /*: any */) {
-  return () => {
-    return envGlobal.$core.__middlewares
-  }
+  return () => envGlobal.$core.__middlewares
 }
 
 function $addMiddleware(envGlobal /*: any */) {
-  return (middleware /*: Middleware */) => {
-    return envGlobal.$core.__middlewares.push(middleware)
-  }
+  return (middleware /*: Middleware */) => envGlobal.$core.__middlewares.push(middleware)
 }
 
 function $loadHooks(envGlobal /*: any */) {
-  return (hooks /*: any */) => {
-    return envGlobal.$core.loadHooks(hooks)
-  }
+  return (hooks /*: any */) => envGlobal.$core.loadHooks(hooks)
 }
 
 function $emit(envGlobal /*: any */) {
-  return (event /*: any */, ...args /*: any */) => {
-    return envGlobal.$core.emit(event, ...args)
-  }
+  return (event /*: any */, ...args /*: any */) => envGlobal.$core.emit(event, ...args)
 }
 
 function $registerGlobal(envGlobal /*: any */) {
-  return (obj /*: any */, ...prefixes /*: Array<string> */) => {
-    return envGlobal.$core.loadObjectToGlobal(obj, ...prefixes)
-  }
+  return (obj /*: any */, ...prefixes /*: Array<string> */) => envGlobal.$core.loadObjectToGlobal(obj, ...prefixes)
 }
 
 function $reloadGlobal(envGlobal /*: any */) {
-  return () => {
-    return envGlobal.$core.reloadGlobal()
-  }
+  return () => envGlobal.$core.reloadGlobal()
 }
 
 function $on(envGlobal /*: any */) {
-  return (event /*: any */, listenFn /*: Function */) => {
-    return envGlobal.$core.on(event, listenFn)
-  }
+  return (event /*: any */, listenFn /*: Function */) => envGlobal.$core.on(event, listenFn)
 }
 
 function $readfiles(envGlobal /*: any */) {
@@ -115,9 +93,7 @@ function $readfiles(envGlobal /*: any */) {
 }
 
 function $rootDir(envGlobal /*: any */) {
-  return () => {
-    return envGlobal.$core.__rootDir
-  }
+  return envGlobal.$core.__rootDir
 }
 
 function $deDef(envGlobal /*: any */) {

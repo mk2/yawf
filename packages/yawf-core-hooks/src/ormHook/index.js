@@ -34,7 +34,7 @@ export default class extends Hook {
       DataTypes: Sequelize.DataTypes,
       Op: Sequelize.Op
     })
-    const models = await $readfiles($rootDir(), [ 'server', 'models' ])
+    const models = await $readfiles($rootDir, [ 'server', 'models' ])
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]

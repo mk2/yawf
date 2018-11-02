@@ -216,7 +216,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
         })
         return mergeObj
       }
-      _.merge(globalTarget, generatePropObject(nonGlobalTarget))
+      _.merge(nonGlobalTarget, generatePropObject(nonGlobalTarget))
       if (!this.__config.hateGlobal) {
         _.merge(globalTarget, generatePropObject(globalTarget))
       }
@@ -430,7 +430,8 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       if (!hook.defaults) return
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Defaults.Will}`])
       try {
-        this.__config.hook[hookName] = hook.defaults()
+        if (!this.__config.hook[hookName]) this.__config.hook[hookName] = {}
+        _.merge(this.__config.hook, { [hookName]: hook.defaults() })
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Defaults.Succeeded}`])
       } catch (e) {
         hook.__err = e
@@ -447,7 +448,8 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       if (!hook.configure) return
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Will}`])
       try {
-        _.merge(this.__config.hook[hookName], hook.configure())
+        if (!this.__config.hook[hookName]) this.__config.hook[hookName] = {}
+        _.merge(this.__config.hook, { [hookName]: hook.configure() })
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Succeeded}`])
       } catch (e) {
         hook.__err = e

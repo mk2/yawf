@@ -46,7 +46,7 @@ export default class Starter /*:: implements InternalStarterApi */ {
       serverApi: this.__serverApi,
       rootDir: this.__rootDir,
       options: {
-        hateGlobal: !!(false || options.hateGlobal)
+        hateGlobal: !!options.hateGlobal
       }
     })
   }
