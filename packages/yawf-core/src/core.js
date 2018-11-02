@@ -5,10 +5,9 @@ import FrameworkEvents from './framework-events'
 import path from 'path'
 import { fs } from './util'
 import _ from 'lodash'
-import { loadDirFiles, loadFiles } from './util'
+import { readfiles } from './util'
 import appUtils from './forApp/util'
 import defaultConfig from './config'
-import glob from 'glob'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -205,9 +204,21 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       }
     }
     for (let name in obj) {
-      nonGlobalTarget[name] = obj[name]
+      const prop = obj[name]
+      const generatePropObject = (_global) => {
+        const mergeObj = {}
+        Object.defineProperty(mergeObj, name, {
+          configurable: true,
+          enumerable: true,
+          get() {
+            return typeof prop === 'function' ? prop(_global) : prop
+          }
+        })
+        return mergeObj
+      }
+      _.merge(globalTarget, generatePropObject(nonGlobalTarget))
       if (!this.__config.hateGlobal) {
-        globalTarget[name] = obj[name]
+        _.merge(globalTarget, generatePropObject(globalTarget))
       }
     }
   }
@@ -235,8 +246,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   async __loadConfigFiles() {
     try {
-      const configFiles = glob.sync(path.join(this.__config.app.configDir, '**', '*.js'))
-      const config = (await loadFiles(this.__rootDir, ...configFiles)).config
+      const config = (await readfiles(this.__rootDir, 'config'))
       _.merge(this.__config, config)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
@@ -248,7 +258,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppActions() {
     let actions /*: any */ = {}
     try {
-      actions = await loadDirFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.actionsDir)
+      actions = await readfiles(this.__rootDir, [ this.__config.app.appDir, this.__config.app.actionsDir ], { useIndex: false })
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return
@@ -265,7 +275,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppHooks() {
     let hooks /*: any */ = {}
     try {
-      hooks = await loadDirFiles(this.__rootDir, this.__config.app.appDir, this.__config.app.hooksDir)
+      hooks = await readfiles(this.__rootDir, [ this.__config.app.appDir, this.__config.app.hooksDir ])
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return

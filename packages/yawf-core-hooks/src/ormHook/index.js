@@ -34,20 +34,20 @@ export default class extends Hook {
       DataTypes: Sequelize.DataTypes,
       Op: Sequelize.Op
     })
-    const models = await $loadDirFiles('server', 'models')
+    const models = await $readfiles($rootDir(), [ 'server', 'models' ])
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]
       const model = this.sequelize.define(regularModelName, userModel.definition())
       model.sync()
-      models[regularModelName] = model
+      models[regularModelName] = () => model
       delete models[key]
     }
     $registerGlobal(models)
     const globalFuncs = {}
     globalFuncs['$db'] = (() => this.sequelize).bind(this)
-    globalFuncs['$transaction'] = ((...args) => this.sequelize.transaction(...args)).bind(this)
-    globalFuncs['$query'] = ((...args) => this.sequelize.query(...args)).bind(this)
+    globalFuncs['$transaction'] = () => ((...args) => this.sequelize.transaction(...args)).bind(this)
+    globalFuncs['$query'] = () => ((...args) => this.sequelize.query(...args)).bind(this)
     $registerGlobal(globalFuncs)
   }
 

@@ -5,16 +5,17 @@ import type { Middleware } from 'express'
 import type { InternalCoreApi } from '../core'
  */
 
-import { loadDirFiles } from '../util'
+import { readfiles } from '../util'
 
 export default {
+  $core,
   $config,
   $hookConfig,
   $log,
   $error,
   $on,
   $events,
-  $loadDirFiles,
+  $readfiles,
   $registerGlobal,
   $hooks,
   $loadHooks,
@@ -25,75 +26,108 @@ export default {
   $import
 }
 
-function $core() /*: InternalCoreApi */ {
-  return global['__frameworkCore']
+function $core(envGlobal /*: any */) /*: InternalCoreApi */ {
+  return envGlobal['__frameworkCore']
 }
 
-function $config() {
-  return $core().__config
+function $config(envGlobal /*: any */) {
+  return () => {
+    return envGlobal.$core.__config
+  }
 }
 
-function $hooks() /*: { [string]: any } */ {
-  return $core().__hooks
+function $hooks(envGlobal /*: any */) /*: { [string]: any } */ {
+  return () => {
+    return envGlobal.$core.__hooks
+  }
 }
 
-function $hookConfig(hook /*: any */) {
-  return $config().hook[hook.__name]
+function $hookConfig(envGlobal /*: any */) {
+  return (hook /*: any */) => {
+    return envGlobal.$config().hook[hook.__name]
+  }
 }
 
-function $log(...args /*: any */) {
-  $core().__logger.log(...args)
+function $log(envGlobal /*: any */) {
+  return (...args /*: any */) => {
+    return envGlobal.$core.__logger.log(...args)
+  }
 }
 
-function $error(...args /*: any */) {
-  $core().__logger.error(...args)
+function $error(envGlobal /*: any */) {
+  return (...args /*: any */) => {
+    return envGlobal.$core.__logger.error(...args)
+  }
 }
 
-function $events() {
-  return $core().__events
+function $events(envGlobal /*: any */) {
+  return () => {
+    return envGlobal.$core.__events
+  }
 }
 
-function $middlewares() /*: Array<Middleware> */ {
-  return $core().__middlewares
+function $middlewares(envGlobal /*: any */) {
+  return () => {
+    return envGlobal.$core.__middlewares
+  }
 }
 
-function $addMiddleware(middleware /*: Middleware */) {
-  $core().__middlewares.push(middleware)
+function $addMiddleware(envGlobal /*: any */) {
+  return (middleware /*: Middleware */) => {
+    return envGlobal.$core.__middlewares.push(middleware)
+  }
 }
 
-function $loadHooks(hooks /*: any */) {
-  $core().loadHooks(hooks)
+function $loadHooks(envGlobal /*: any */) {
+  return (hooks /*: any */) => {
+    return envGlobal.$core.loadHooks(hooks)
+  }
 }
 
-function $emit(event /*: any */, ...args /*: any */) {
-  $core().emit(event, ...args)
+function $emit(envGlobal /*: any */) {
+  return (event /*: any */, ...args /*: any */) => {
+    return envGlobal.$core.emit(event, ...args)
+  }
 }
 
-function $registerGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
-  $core().loadObjectToGlobal(obj, ...prefixes)
+function $registerGlobal(envGlobal /*: any */) {
+  return (obj /*: any */, ...prefixes /*: Array<string> */) => {
+    return envGlobal.$core.loadObjectToGlobal(obj, ...prefixes)
+  }
 }
 
-function $reloadGlobal() {
-  $core().reloadGlobal()
+function $reloadGlobal(envGlobal /*: any */) {
+  return () => {
+    return envGlobal.$core.reloadGlobal()
+  }
 }
 
-function $on(event /*: any */, listenFn /*: Function */) {
-  $core().on(event, listenFn)
+function $on(envGlobal /*: any */) {
+  return (event /*: any */, listenFn /*: Function */) => {
+    return envGlobal.$core.on(event, listenFn)
+  }
 }
 
-async function $loadDirFiles(...filesDir /*: Array<string> */) /*: Promise<{ [string]: any }> */ {
-  const objMap = await loadDirFiles($core().__rootDir, ...filesDir)
-  return objMap
+function $readfiles(envGlobal /*: any */) {
+  return async (...args /*: any */) => {
+    return await readfiles(...args)
+  }
 }
 
-function $rootDir() {
-  return $core().__rootDir
+function $rootDir(envGlobal /*: any */) {
+  return () => {
+    return envGlobal.$core.__rootDir
+  }
 }
 
-function $deDef(mod /*: any */) {
-  return mod.default ? mod.default : mod
+function $deDef(envGlobal /*: any */) {
+  return (mod /*: any */) => {
+    return mod.default ? mod.default : mod
+  }
 }
 
-async function $import(path /*: string */) {
-  return $deDef(await import(path))
+function $import(envGlobal /*: any */) {
+  return async (path /*: string */) => {
+    return envGlobal.$deDef(await import(path))
+  }
 }

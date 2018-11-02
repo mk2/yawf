@@ -1,6 +1,7 @@
 import path from 'path'
 import _fs from 'fs'
 import _ from 'lodash'
+import glob from 'glob'
 
 // @flow
 
@@ -16,49 +17,48 @@ export function dedef(obj) {
   return obj.default ? obj.default : obj
 }
 
-export async function loadDirFiles(rootDir /*: ?string */, ...dir /*: Array<string> */) {
-  if (!rootDir) return
+export async function readfiles(rootDir /* string */, dirs /* Array<string> | string */, _options = {}) {
+  const options = _.merge({
+    ext: 'js', 
+    useIndex: true 
+  }, _options)
+  const { ext, useIndex } = options
+  dirs = Array.isArray(dirs) ? dirs : [ dirs ]
+  const filePathList = glob.sync(path.join(...dirs, '**', `*.${ext}`), { cwd: rootDir })
+  let moduleMap = {}
 
-  const objMap = {}
-  const files = await fs.readdir(path.resolve(rootDir, ...dir))
-
-  for (let file of files) {
-    const obj = await import(path.resolve(rootDir, ...dir, file))
-    objMap[_.camelCase(basename(file))] = obj.default ? obj.default : obj
-  }
-
-  return objMap
-}
-
-export async function loadFiles(rootDir /*: ?string */, ...filePathList /*: Array<string> */) {
-  if (!rootDir || !filePathList || filePathList.length < 1) return
-
-  const objMap = {}
   for (let filePath of filePathList) {
-    const obj = dedef(await import(path.resolve(rootDir, filePath)))
-    const dirname = path.dirname(filePath)
-    const filename = path.basename(filePath, '.js')
+    const module = dedef(await import(path.resolve(rootDir, filePath)))
+    const dirnames = path.dirname(filePath)
+    const filename = path.basename(filePath, `.${ext}`)
     const isIndex = filename === 'index'
 
-    let parentTgt = null
-    let tgt = objMap
-    let lastKey = null
+    let parentDir = null
+    let dir = moduleMap
+    let lastDirname = null
+
     if (dirname) {
-      for (let key of dirname.split(path.sep)) {
-        key = _.camelCase(key) 
-        if (!tgt[key]) {
-          tgt[key] = {}
+      for (let dirname of dirnames.split(path.sep)) {
+        dirname = _.camelCase(dirname) 
+        if (!dir[dirname]) {
+          dir[dirname] = {}
         }
-        parentTgt = tgt
-        tgt = tgt[key]
-        lastKey = key
+        parentDir = dir
+        dir = dir[dirname]
+        lastDirname = dirname
       }
     }
-    if (parentTgt && isIndex) {
-      parentTgt[lastKey] = obj
+    if (useIndex && isIndex && parentDir) {
+      parentDir[lastDirname] = module
     } else {
-      tgt[_.camelCase(filename)] = obj
+      dir[_.camelCase(filename)] = module
     }
   }
-  return objMap
+
+  for (let dir of dirs) {
+    moduleMap = moduleMap[dir] ? moduleMap[dir] : moduleMap
+  }
+
+  return moduleMap
 }
+

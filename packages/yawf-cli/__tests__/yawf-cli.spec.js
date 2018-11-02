@@ -1,7 +1,7 @@
-'use strict';
-
 const yawfCli = require('..');
 
 describe('@yawf/yawf-cli', () => {
-    it('needs tests');
+  test('', () => {
+    expect(true).toBeTruthy()
+  })
 });
