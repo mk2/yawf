@@ -25,8 +25,8 @@ export default async function() {
   await fs.writeFile(genTpl('package.json'), JSON.stringify(packageJson, null, '  '))
   await writeTpl(tpl('babel.config.js'), genTpl('babel.config.js'))
   await writeTpl(tpl('app.js'), genTpl('app.js'))
-  await writeTpl(tpl('.editorconfig'), genTpl('.editorconfig'))
-  await writeTpl(tpl('.gitignore'), genTpl('.gitignore'))
+  await writeTpl(tpl('dot.editorconfig'), genTpl('.editorconfig'))
+  await writeTpl(tpl('dot.gitignore'), genTpl('.gitignore'))
 
   await fs.mkdir(genTpl('server', 'actions'), { recursive: true })
   await writeTpl(tpl('server', 'actions', 'top.js'), genTpl('server', 'actions', 'top.js'))
