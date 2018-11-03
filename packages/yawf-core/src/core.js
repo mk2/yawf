@@ -150,6 +150,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __wrapActionFn(actionFn /*: ActionFn */) {
     return async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
+      this.__logger.debug(`A Request to ${req.path}`)
       try {
         await actionFn.call(actionFn, req, res)
         return next()
