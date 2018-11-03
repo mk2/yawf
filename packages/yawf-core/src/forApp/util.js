@@ -5,7 +5,7 @@ import type { Middleware } from 'express'
 import type { InternalCoreApi } from '../core'
  */
 
-import { readfiles } from '../util'
+import { readfiles, isClass } from '../util'
 
 export default {
   $core,
@@ -107,3 +107,8 @@ function $import(envGlobal /*: any */) {
     return envGlobal.$deDef(await import(path))
   }
 }
+
+function $isClass(envGlobal /*: any */) {
+  return isClass
+}
+

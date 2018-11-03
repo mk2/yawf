@@ -71,3 +71,16 @@ export async function readfiles(rootDir /* string */, dirs /* Array<string> | st
   return moduleMap
 }
 
+export function isClass(v) {
+    return typeof v === 'function' && /^\s*class\s+/.test(v.toString());
+}
+
+export function mapKeysDeep(obj, cb, nestKeys = []) {
+  const wrapCb = (v, k ,o) => (cb(v, k, o, nestKeys), k)
+  _.mapValues(
+    _.mapKeys(obj, wrapCb),
+    (val, key) => { 
+      return _.isObject(val) ? mapKeysDeep(val, cb, nestKeys.concat(key)) : val
+    }
+  )
+}

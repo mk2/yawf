@@ -5,7 +5,7 @@ import FrameworkEvents from './framework-events'
 import path from 'path'
 import { fs } from './util'
 import _ from 'lodash'
-import { readfiles } from './util'
+import { readfiles, isClass, mapKeysDeep } from './util'
 import appUtils from './forApp/util'
 import defaultConfig from './config'
 
@@ -261,13 +261,27 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       this.emit(this.__events.core.didHappenError, e)
       return
     }
+    
+    this.loadActions(actions)
+  }
 
-    for (let name in actions) {
-      if (this.__config.hateGlobal) {
-        actions.__proto__['global'] = this.global
+  loadActions(actions /*: { [string]: any } */) {
+    mapKeysDeep(actions, (action, actionName, _obj, nestKeys) => {
+      if (_.isFunction(action)) {
+        if (this.__config.hateGlobal) {
+          actions.__proto__['global'] = this.global
+        }
+
+        let obj = this.__actions
+        for (let key of nestKeys) {
+          if (!obj[key]) obj[key] = {}
+          obj = obj[key]
+        }
+        if (_.isFunction(action)) {
+          obj[actionName] = action
+        }
       }
-      this.__actions[name] = new actions[name]()
-    }
+    })
   }
 
   async __loadAppHooks() {
@@ -319,7 +333,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Did}`] = Symbol()
 
     if (this.__config.hateGlobal) {
-      hookClass.__proto__['global'] = this.global
+      hookClass.prototype['global'] = this.global
     }
     try {
       const hook = new hookClass()
@@ -386,10 +400,9 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __bindActionsToRoutes() {
     for (let route in this.__config.routes) {
       const [_method, path] = route.split(' ')
-      const [clazz, clazzMethod] = this.__config.routes[route].split('.')
       const method = _method.toLowerCase()
-      const actionClazz = this.__actions[clazz]
-      const actionFn = this.__actions[clazz][clazzMethod].bind(actionClazz)
+      const actionNamePath = this.__config.routes[route]
+      const actionFn = _.get(this.__actions, actionNamePath)
       switch (method) {
         case 'get':
           this.get({ path, actionFn })
@@ -515,7 +528,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       const hook = this.__hooks[hookName]
       if (hook.__err) {
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Failed}`], hook.__err)
-        this.emit(this.__events.core.hookFailedLoad, { hookName: hook.__name })
+        this.emit(this.__events.core.hookFailedLoad, { hookName: hook.__name, err: hook.__err })
       } else {
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Succeeded}`])
         this.emit(this.__events.core.hookSucceededLoad, { hookName: hook.__name })
