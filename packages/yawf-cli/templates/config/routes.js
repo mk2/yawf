@@ -1,3 +1,3 @@
 export default {
-  'GET /': 'top.index'
+  'GET /': 'top'
 }

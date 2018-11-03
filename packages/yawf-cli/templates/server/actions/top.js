@@ -1,5 +1,3 @@
-export default class {
-  index(req, res) {
-    res.render('top')
-  }
+export default function(req, res) {
+  res.render('top')
 }
