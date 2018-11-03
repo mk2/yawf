@@ -22,6 +22,7 @@ export default class extends Hook {
         modules: [path.resolve($rootDir, clientFileDir, 'node_modules')]
       }
     }), {
+      logger: this.__logger.scope('webpack')
     }))
   }
 

@@ -11,8 +11,6 @@ export default {
   $core,
   $config,
   $hookConfig,
-  $log,
-  $error,
   $on,
   $events,
   $readfiles,
@@ -40,18 +38,6 @@ function $hooks(envGlobal /*: any */) /*: { [string]: any } */ {
 
 function $hookConfig(envGlobal /*: any */) {
   return (hook /*: any */) => envGlobal.$config.hook[hook.__name]
-}
-
-function $log(envGlobal /*: any */) {
-  return (...args /*: any */) => {
-    return envGlobal.$core.__logger.log(...args)
-  }
-}
-
-function $error(envGlobal /*: any */) {
-  return (...args /*: any */) => {
-    return envGlobal.$core.__logger.error(...args)
-  }
 }
 
 function $events(envGlobal /*: any */) {

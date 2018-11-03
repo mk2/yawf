@@ -21,6 +21,7 @@ export default class Hook /*:: implements InternalHookApi */ {
   __name = null
   __isLoaded = false
   __err = null
+  __logger = null
 
   defaults() {
     return {}

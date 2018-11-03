@@ -8,6 +8,8 @@ import _ from 'lodash'
 import { readfiles, isClass, mapKeysDeep } from './util'
 import appUtils from './forApp/util'
 import defaultConfig from './config'
+import signale, { Signale } from 'signale'
+import logger from './forApp/logger'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -69,7 +71,6 @@ export interface InternalCoreApi extends CoreApi {
 export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __global = {}
-  __logger = console
   __config = {}
   __actions = {}
   __hooks = {}
@@ -77,6 +78,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __rootDir = null
   __events = {}
   __middlewares = []
+  __logger = signale
 
   constructor({ serverApi, rootDir, options } /*: ConstructorArguments */) {
     super()
@@ -89,6 +91,16 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__events = {
       ...FrameworkEvents
     }
+    this.__logger = new Signale({
+      scope: ['core'],
+      types: {
+        trace: {
+          badge: '**',
+          color: 'red',
+          label: 'trace'
+        }
+      }
+    })
   }
 
   get global() {
@@ -139,7 +151,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __wrapActionFn(actionFn /*: ActionFn */) {
     return async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       try {
-        await actionFn(req, res)
+        await actionFn.call(actionFn, req, res)
         return next()
       } catch (e) {
         this.emit(this.__events.core.didHappenError, e)
@@ -278,6 +290,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
           obj = obj[key]
         }
         if (_.isFunction(action)) {
+          _.mergeWith(action.__proto__, logger, (objValue, srcValue) => {
+            if (objValue) return objValue
+            return srcValue.bind(action)
+          })
+          action.__proto__['__logger'] = this.__logger.scope('action', actionName)
           obj[actionName] = action
         }
       }
@@ -338,6 +355,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     try {
       const hook = new hookClass()
       hook.__name = regularHookName
+      _.mergeWith(hook.__proto__, logger, (objValue, srcValue) => {
+        if (objValue) return objValue
+        return srcValue.bind(hook)
+      })
+      hook.__logger = this.__logger.scope('hook', hook.__name)
       this.__hooks[regularHookName] = hook
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)

@@ -29,6 +29,7 @@ export default class extends Hook {
     const dbUserPassword = hookConfig.password
     const options = hookConfig.options
     options.storage = options.storage || defaultStorage
+    options.logging = this.__logger.scope('sequelize').debug
     this.sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
     $registerGlobal({
       DataTypes: Sequelize.DataTypes,
