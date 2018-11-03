@@ -1,6 +1,6 @@
 {
   "name": "@yawf/yawf-cli",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "yawf generator tool for command line",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-cli",
