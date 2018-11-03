@@ -13,7 +13,7 @@ export default class extends Hook {
   }
 
   async initialize() {
-    const clientFileDir = $config().app.clientDir
+    const clientFileDir = $config.app.clientDir
     const webpackUserConfig = await $import(path.resolve($rootDir, clientFileDir, $hookConfig(this).webpackConfigFile))
     $addMiddleware(middleware(webpack({
       ...webpackUserConfig(),

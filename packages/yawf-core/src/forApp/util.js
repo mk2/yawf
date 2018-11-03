@@ -31,7 +31,7 @@ function $core(envGlobal /*: any */) /*: InternalCoreApi */ {
 }
 
 function $config(envGlobal /*: any */) {
-  return () => envGlobal.$core.__config
+  return envGlobal.$core.__config
 }
 
 function $hooks(envGlobal /*: any */) /*: { [string]: any } */ {
@@ -39,7 +39,7 @@ function $hooks(envGlobal /*: any */) /*: { [string]: any } */ {
 }
 
 function $hookConfig(envGlobal /*: any */) {
-  return (hook /*: any */) => envGlobal.$config().hook[hook.__name]
+  return (hook /*: any */) => envGlobal.$config.hook[hook.__name]
 }
 
 function $log(envGlobal /*: any */) {

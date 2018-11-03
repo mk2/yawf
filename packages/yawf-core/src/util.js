@@ -25,10 +25,11 @@ export async function readfiles(rootDir /* string */, dirs /* Array<string> | st
   const { ext, useIndex } = options
   dirs = Array.isArray(dirs) ? dirs : [ dirs ]
   const filePathList = glob.sync(path.join(...dirs, '**', `*.${ext}`), { cwd: rootDir })
+
+  const errors = []
   let moduleMap = {}
 
   for (let filePath of filePathList) {
-    const module = dedef(await import(path.resolve(rootDir, filePath)))
     const dirnames = path.dirname(filePath)
     const filename = path.basename(filePath, `.${ext}`)
     const isIndex = filename === 'index'
@@ -48,6 +49,14 @@ export async function readfiles(rootDir /* string */, dirs /* Array<string> | st
         lastDirname = dirname
       }
     }
+
+    let module = null
+    try {
+      module = dedef(await import(path.resolve(rootDir, filePath)))
+    } catch (e) {
+      errors.push(e)
+    }
+
     if (useIndex && isIndex && parentDir) {
       parentDir[lastDirname] = module
     } else {

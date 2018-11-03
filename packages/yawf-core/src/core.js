@@ -205,20 +205,18 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
     for (let name in obj) {
       const prop = obj[name]
-      const generatePropObject = (_global) => {
-        const mergeObj = {}
-        Object.defineProperty(mergeObj, name, {
+      const addProp = (_global, _prop) => {
+        Object.defineProperty(_global, name, {
           configurable: true,
           enumerable: true,
           get() {
-            return typeof prop === 'function' ? prop(_global) : prop
+            return typeof _prop === 'function' ? _prop(_global) : _prop
           }
         })
-        return mergeObj
       }
-      _.merge(nonGlobalTarget, generatePropObject(nonGlobalTarget))
+      addProp(nonGlobalTarget, prop)
       if (!this.__config.hateGlobal) {
-        _.merge(globalTarget, generatePropObject(globalTarget))
+        addProp(globalTarget, prop)
       }
     }
   }

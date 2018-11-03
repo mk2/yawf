@@ -23,7 +23,7 @@ export default class extends Hook {
 
   async initialize() {
     const hookConfig = $hookConfig(this)
-    const defaultStorage = path.resolve(process.cwd(), $hookConfig(this).databaseName + '.db')
+    const defaultStorage = path.resolve($rootDir, $hookConfig(this).databaseName + '.db')
     const dbName = hookConfig.databaseName
     const dbUser = hookConfig.user
     const dbUserPassword = hookConfig.password
