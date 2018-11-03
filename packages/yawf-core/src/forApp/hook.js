@@ -5,8 +5,8 @@ export interface HookApi {
   defaults(): any;
   configure(): any;
   initialize(): ?Promise<any>;
-  registerActions(): void;
-  bindActionsToRoutes(): void;
+  registerActions(): any;
+  bindActionsToRoutes(): any;
 }
 
 export interface InternalHookApi extends HookApi {
@@ -35,9 +35,11 @@ export default class Hook /*:: implements InternalHookApi */ {
 
 
   registerActions() {
+    return {}
   }
 
   bindActionsToRoutes() {
+    return {}
   }
 
 }

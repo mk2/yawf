@@ -265,7 +265,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.loadActions(actions)
   }
 
-  loadActions(actions /*: { [string]: any } */) {
+  loadActions(actions /*: any */) {
     mapKeysDeep(actions, (action, actionName, _obj, nestKeys) => {
       if (_.isFunction(action)) {
         if (this.__config.hateGlobal) {
@@ -477,7 +477,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       if (!hook.registerActions) return
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterActions.Will}`])
       try {
-        hook.registerActions()
+        this.loadActions(hook.registerActions())
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterActions.Succeeded}`])
       } catch (e) {
         hook.__err = e
@@ -495,7 +495,9 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       if (!hook.bindActionsToRoutes) return
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.BindActionsToRoutes.Will}`])
       try {
-        hook.bindActionsToRoutes()
+        const routes = hook.bindActionsToRoutes()
+        _.merge(routes, this.__config.routes)
+        _.merge(this.__config.routes, routes)
         this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.BindActionsToRoutes.Succeeded}`])
       } catch (e) {
         hook.__err = e
