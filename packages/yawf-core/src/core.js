@@ -150,16 +150,14 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __wrapActionFn(actionFn /*: ActionFn */) {
     return async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
-      this.__logger.debug(`A Request to ${req.path}`)
+      this.__logger.info(`A Request to ${req.path}.`)
       try {
         await actionFn.call(actionFn, req, res)
-        return next()
       } catch (e) {
         this.emit(this.__events.core.didHappenError, e)
         if (res.headersSent) return next(e)
         res.status(500)
         res.render('error', { statusCode: 500 })
-        return next()
       }
     }
   }
@@ -426,6 +424,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       const method = _method.toLowerCase()
       const actionNamePath = this.__config.routes[route]
       const actionFn = _.get(this.__actions, actionNamePath)
+      this.__logger.debug(`Bind ${actionNamePath} to ${path}.`)
       switch (method) {
         case 'get':
           this.get({ path, actionFn })

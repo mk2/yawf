@@ -1,10 +1,10 @@
 <template>
   <div>
     <router-link to="/">
-      top
+      トップ
     </router-link>
     <router-link to="/about">
-      about
+      このサイトについて
     </router-link>
     <router-view></router-view>
   </div>

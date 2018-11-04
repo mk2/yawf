@@ -4,6 +4,10 @@ export default {
     this.__logger.success(...args)
   },
 
+  info(...args) {
+    this.__logger.info(...args)
+  },
+
   debug(...args) {
     this.__logger.debug(...args)
   },

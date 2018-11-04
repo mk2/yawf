@@ -27,6 +27,8 @@ export async function yawf(options /*: YawfOptions */) {
     loadCoreHooks(starter.core)
   }
   await starter.initialize()
+  starter.core.__logger.complete(`A yawf app started at port ${starter.port}.`)
+  starter.core.__logger.complete(`Let's start at http://localhost:${starter.port}`)
   return starter
 }
 

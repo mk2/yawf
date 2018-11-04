@@ -1,5 +1,5 @@
 <template>
   <div>
-    Aboutページ
+    このサイトについて
   </div>
 </template>
