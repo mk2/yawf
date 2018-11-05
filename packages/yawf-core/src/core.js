@@ -5,11 +5,12 @@ import FrameworkEvents from './framework-events'
 import path from 'path'
 import { fs } from './util'
 import _ from 'lodash'
-import { readfiles, isClass, mapKeysDeep } from './util'
+import { readfiles, isClass, mapKeysDeep, mergeWithProp } from './util'
 import appUtils from './forApp/util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import logger from './forApp/logger'
+import utilTrait from './forApp/utilTrait'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -79,6 +80,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __events = {}
   __middlewares = []
   __logger = signale
+  __actionCallContext = {}
 
   constructor({ serverApi, rootDir, options } /*: ConstructorArguments */) {
     super()
@@ -101,6 +103,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
         }
       }
     })
+    mergeWithProp(this.__actionCallContext, utilTrait, { __framework: this, __logger: this.__logger.scope('action') })
   }
 
   get global() {
@@ -152,7 +155,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     return async (req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       this.__logger.info(`A Request to ${req.path}.`)
       try {
-        await actionFn.call(actionFn, req, res)
+        await actionFn.call(this.__actionCallContext, req, res)
       } catch (e) {
         this.emit(this.__events.core.didHappenError, e)
         if (res.headersSent) return next(e)
@@ -280,7 +283,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     mapKeysDeep(actions, (action, actionName, _obj, nestKeys) => {
       if (_.isFunction(action)) {
         if (this.__config.hateGlobal) {
-          actions.__proto__['global'] = this.global
+          action['global'] = this.global
         }
 
         let obj = this.__actions
@@ -289,11 +292,6 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
           obj = obj[key]
         }
         if (_.isFunction(action)) {
-          _.mergeWith(action.__proto__, logger, (objValue, srcValue) => {
-            if (objValue) return objValue
-            return srcValue.bind(action)
-          })
-          action.__proto__['__logger'] = this.__logger.scope('action', actionName)
           obj[actionName] = action
         }
       }
@@ -353,11 +351,9 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
     try {
       const hook = new hookClass()
+      mergeWithProp(hook, utilTrait)
       hook.__name = regularHookName
-      _.mergeWith(hook.__proto__, logger, (objValue, srcValue) => {
-        if (objValue) return objValue
-        return srcValue.bind(hook)
-      })
+      hook.__framework = this
       hook.__logger = this.__logger.scope('hook', hook.__name)
       this.__hooks[regularHookName] = hook
     } catch (e) {
