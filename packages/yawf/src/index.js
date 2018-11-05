@@ -2,7 +2,8 @@
 import { Starter } from '@yawf/yawf-core'
 import coreHooks from '@yawf/yawf-core-hooks'
 
-export { Hook as Hook } from '@yawf/yawf-core'
+export Hook from '@yawf/yawf-core'
+export Logic from '@yawf/yawf-core'
 
 /*::
 export type YawfOptions = {
