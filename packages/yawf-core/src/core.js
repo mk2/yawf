@@ -351,10 +351,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
     try {
       const hook = new hookClass()
-      mergeWithProp(hook, utilTrait)
-      hook.__name = regularHookName
-      hook.__framework = this
-      hook.__logger = this.__logger.scope('hook', hook.__name)
+      mergeWithProp(hook, utilTrait, {
+        __name: regularHookName,
+        __frameworkCore: this,
+        __logger: this.__logger.scope('hook', hook.__name)
+      })
       this.__hooks[regularHookName] = hook
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)

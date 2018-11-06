@@ -13,13 +13,13 @@ export default class extends Hook {
   }
 
   async initialize() {
-    const clientFileDir = $config.app.clientDir
-    const webpackUserConfig = await $import(path.resolve($rootDir, clientFileDir, $hookConfig(this).webpackConfigFile))
-    $addMiddleware(middleware(webpack({
+    const clientFileDir = this.$config.app.clientDir
+    const webpackUserConfig = await this.$import(path.resolve(this.$rootDir, clientFileDir, this.$hookConfig.webpackConfigFile))
+    this.$addMiddleware(middleware(webpack({
       ...webpackUserConfig(),
-      context: path.resolve($rootDir, clientFileDir),
+      context: path.resolve(this.$rootDir, clientFileDir),
       resolve: {
-        modules: [path.resolve($rootDir, clientFileDir, 'node_modules')]
+        modules: [path.resolve(this.$rootDir, clientFileDir, 'node_modules')]
       }
     }), {
       logger: this.__logger.scope('webpack')

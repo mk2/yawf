@@ -1,27 +1,33 @@
+import { readfiles, isClass } from '../util'
+
 export default {
 
+  get $logger() {
+    return this.__logger
+  },
+
   $success(...args) {
-    this.__logger.success(...args)
+    this.$logger.success(...args)
   },
 
   $info(...args) {
-    this.__logger.info(...args)
+    this.$logger.info(...args)
   },
 
   $debug(...args) {
-    this.__logger.debug(...args)
+    this.$logger.debug(...args)
   },
 
   $log(...args) {
-    this.__logger.log(...args)
+    this.$logger.log(...args)
   },
 
   $error(...args) {
-    this.__logger.error(...args)
+    this.$logger.error(...args)
   },
 
   $fatal(...args) {
-    this.__logger.fatal(...args)
+    this.$logger.fatal(...args)
   },
 
   get $core() /*: InternalCoreApi */ {
@@ -29,7 +35,6 @@ export default {
   },
 
   get $config() {
-    console.log(this)
     return this.$core.__config
   },
 
@@ -50,7 +55,7 @@ export default {
   },
 
   $addMiddleware(middleware /*: Middleware */) {
-    return this.$core.__middlewares.push(middleware)
+    return this.$middlewares.push(middleware)
   },
 
   $loadHooks(hooks /*: any */) {
@@ -86,7 +91,7 @@ export default {
   },
 
   async $import(path /*: string */) {
-    return envGlobal.$deDef(await import(path))
+    return this.$deDef(await import(path))
   },
 
   get $isClass() {

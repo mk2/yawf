@@ -22,20 +22,20 @@ export default class extends Hook {
   }
 
   async initialize() {
-    const hookConfig = $hookConfig(this)
-    const defaultStorage = path.resolve($rootDir, $hookConfig(this).databaseName + '.db')
+    const hookConfig = this.$hookConfig
     const dbName = hookConfig.databaseName
     const dbUser = hookConfig.user
     const dbUserPassword = hookConfig.password
     const options = hookConfig.options
+    const defaultStorage = path.resolve(this.$rootDir, dbName + '.db')
     options.storage = options.storage || defaultStorage
     options.logging = this.__logger.scope('sequelize').debug
     this.sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
-    $registerGlobal({
+    this.$registerGlobal({
       DataTypes: Sequelize.DataTypes,
       Op: Sequelize.Op
     })
-    const models = await $readfiles($rootDir, [ 'server', 'models' ])
+    const models = await this.$readfiles(this.$rootDir, [ 'server', 'models' ])
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]
@@ -44,12 +44,12 @@ export default class extends Hook {
       models[regularModelName] = () => model
       delete models[key]
     }
-    $registerGlobal(models)
+    this.$registerGlobal(models)
     const globalFuncs = {}
     globalFuncs['$db'] = (() => this.sequelize).bind(this)
     globalFuncs['$transaction'] = () => ((...args) => this.sequelize.transaction(...args)).bind(this)
     globalFuncs['$query'] = () => ((...args) => this.sequelize.query(...args)).bind(this)
-    $registerGlobal(globalFuncs)
+    this.$registerGlobal(globalFuncs)
   }
 
 }

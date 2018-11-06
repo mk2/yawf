@@ -7,7 +7,7 @@ describe('core-hooks', () => {
   test('', async () => {
     const starter = new Starter({ rootDir: path.resolve(__dirname, 'mock') })
     starter.bootstrap()
-    $loadHooks(coreHooks)
+    starter.core.loadHooks(coreHooks)
     await starter.initialize()
     expect(User).toBeDefined()
   })
