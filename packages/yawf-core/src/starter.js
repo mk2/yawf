@@ -10,8 +10,7 @@ import type { ServerApi, InternalCoreApi } from './core'
 type Options = {
   serverApi: ?ServerApi,
   port: number,
-  rootDir: ?string,
-  hateGlobal: boolean
+  rootDir: ?string
 }
 
 export interface StarterApi {
@@ -45,9 +44,7 @@ export default class Starter /*:: implements InternalStarterApi */ {
     this.__core = new Core({
       serverApi: this.__serverApi,
       rootDir: this.__rootDir,
-      options: {
-        hateGlobal: !!options.hateGlobal
-      }
+      options
     })
   }
   

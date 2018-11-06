@@ -6,7 +6,6 @@ import path from 'path'
 import { fs } from './util'
 import _ from 'lodash'
 import { readfiles, isClass, mapKeysDeep, mergeWithProp } from './util'
-import appUtils from './forApp/util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import logger from './forApp/logger'
@@ -24,7 +23,6 @@ export type Res = $Response
 export type NextFn = NextFunction
 
 type CoreStartOptions = {
-  hateGlobal: boolean
 }
 
 type ConstructorArguments = {
@@ -172,49 +170,32 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __loadBaseToGlobal() {
     this.__loadCoreToGlobal()
-    this.__loadUtilityMethodsToGlobal()
   }
 
   __unloadBaseFromGlobal() {
-    this.__unloadUtilityMethodsFromGlobal()
     this.__unloadCoreFromGlobal()
   }
 
   __loadCoreToGlobal() {
-    if (this.__config.hateGlobal) return
     this.loadObjectToGlobal({
       [this.__config.app.globalName]: this
     })
   }
 
   __unloadCoreFromGlobal() {
-    if (this.__config.hateGlobal) return
     this.unloadObjectFromGlobal({
       [this.__config.app.globalName]: this
     })
   }
 
-  __loadUtilityMethodsToGlobal() {
-    this.loadObjectToGlobal(appUtils)
-  }
-
-  __unloadUtilityMethodsFromGlobal() {
-    this.unloadObjectFromGlobal(appUtils)
-  }
-
   loadObjectToGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
     let globalTarget = global
-    let nonGlobalTarget = this.__global
     if (prefixes) {
       for (let prefix of prefixes) {
         if (!globalTarget[prefix]) {
           globalTarget[prefix] = {}
         }
-        if (!nonGlobalTarget[prefix]) {
-          nonGlobalTarget[prefix] = {}
-        }
         globalTarget = globalTarget[prefix]
-        nonGlobalTarget = nonGlobalTarget[prefix]
       }
     }
     for (let name in obj) {
@@ -228,10 +209,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
           }
         })
       }
-      addProp(nonGlobalTarget, prop)
-      if (!this.__config.hateGlobal) {
-        addProp(globalTarget, prop)
-      }
+      addProp(globalTarget, prop)
     }
   }
 
@@ -243,10 +221,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       nonGlobalTarget = nonGlobalTarget[prefixes[0]]
     }
     for (let name in obj) {
-      delete nonGlobalTarget[name]
-      if (!this.__config.hateGlobal) {
-        delete globalTarget[name]
-      }
+      delete globalTarget[name]
     }
   }
 
@@ -282,18 +257,12 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   loadActions(actions /*: any */) {
     mapKeysDeep(actions, (action, actionName, _obj, nestKeys) => {
       if (_.isFunction(action)) {
-        if (this.__config.hateGlobal) {
-          action['global'] = this.global
-        }
-
         let obj = this.__actions
         for (let key of nestKeys) {
           if (!obj[key]) obj[key] = {}
           obj = obj[key]
         }
-        if (_.isFunction(action)) {
-          obj[actionName] = action
-        }
+        obj[actionName] = action
       }
     })
   }
@@ -346,9 +315,6 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Failed}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Did}`] = Symbol()
 
-    if (this.__config.hateGlobal) {
-      hookClass.prototype['global'] = this.global
-    }
     try {
       const hook = new hookClass()
       mergeWithProp(hook, utilTrait, {

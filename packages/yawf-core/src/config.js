@@ -1,8 +1,4 @@
 export default {
-  /*
-   * starter options
-   */
-  hateGlobal: false,
 
   /*
    * configs
