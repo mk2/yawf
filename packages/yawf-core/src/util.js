@@ -86,12 +86,14 @@ export function mapKeysDeep(obj, cb, nestKeys = []) {
 }
 
 export function mergeWithProp(obj, ...srcs) {
+  obj = obj || Object.create(null)
   for (let src of srcs) {
     for (let key of Object.getOwnPropertyNames(src)) {
       const objPropDesc = Object.getOwnPropertyDescriptor(obj, key)
-      if (objPropDesc && objPropDesc.value) continue
+      if (objPropDesc && (objPropDesc.value || objPropDesc.get)) continue
       const srcPropDesc = Object.getOwnPropertyDescriptor(src, key)
       Object.defineProperty(obj, key, srcPropDesc)
     }
   }
+  return obj
 }

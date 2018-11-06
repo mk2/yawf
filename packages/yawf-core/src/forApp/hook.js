@@ -5,6 +5,7 @@ export interface HookApi {
   defaults(): any;
   configure(): any;
   initialize(): ?Promise<any>;
+  registerMixins(): any;
   registerActions(): any;
   bindActionsToRoutes(): any;
 }
@@ -34,6 +35,9 @@ export default class Hook /*:: implements InternalHookApi */ {
   async initialize() {
   }
 
+  registerMixins() {
+    return {}
+  }
 
   registerActions() {
     return {}

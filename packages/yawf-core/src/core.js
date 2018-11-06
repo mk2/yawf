@@ -8,8 +8,7 @@ import _ from 'lodash'
 import { readfiles, isClass, mapKeysDeep, mergeWithProp } from './util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
-import logger from './forApp/logger'
-import utilTrait from './forApp/utilTrait'
+import utilMixin from './forApp/utilMixin'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -76,6 +75,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   __serverApi = null
   __rootDir = null
   __events = {}
+  __mixins = {}
   __middlewares = []
   __logger = signale
   __actionCallContext = {}
@@ -101,7 +101,16 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
         }
       }
     })
-    mergeWithProp(this.__actionCallContext, utilTrait, { __framework: this, __logger: this.__logger.scope('action') })
+    const ActionCallContext = utilMixin(class {})
+    const actionCallContext = new ActionCallContext()
+    actionCallContext.__frameworkCore = this
+    actionCallContext.__logger = this.__logger.scope('action')
+    this.__actionCallContext = actionCallContext
+
+    // eport mixin to global
+    this.__mixins.core = {
+      utilMixin: this.__wrapMixin(utilMixin)
+    }
   }
 
   get global() {
@@ -170,10 +179,12 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __loadBaseToGlobal() {
     this.__loadCoreToGlobal()
+    this.__loadMixinsToGlobal()
   }
 
   __unloadBaseFromGlobal() {
     this.__unloadCoreFromGlobal()
+    this.__unloadMixinsFromGlobal()
   }
 
   __loadCoreToGlobal() {
@@ -188,6 +199,22 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     })
   }
 
+  __loadMixinsToGlobal() {
+    for (let category in this.__mixins) {
+      this.loadObjectToGlobal(this.__mixins[category], 'mixins', category)
+    }
+  }
+
+  __unloadMixinsFromGlobal() {
+    for (let category in this.__mixins) {
+      this.unloadObjectFromGlobal(this.__mixins[category], 'mixins', category)
+    }
+  }
+
+  __wrapMixin(mixin /*: Function */) /*: Function */ {
+    return Base => Base ? mixin(Base) : mixin(class {})
+  }
+
   loadObjectToGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
     let globalTarget = global
     if (prefixes) {
@@ -200,26 +227,18 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
     for (let name in obj) {
       const prop = obj[name]
-      const addProp = (_global, _prop) => {
-        Object.defineProperty(_global, name, {
-          configurable: true,
-          enumerable: true,
-          get() {
-            return typeof _prop === 'function' ? _prop(_global) : _prop
-          }
-        })
-      }
-      addProp(globalTarget, prop)
+      globalTarget[name] = prop
     }
   }
 
-  unloadObjectFromGlobal(obj /*: any */, prefixes /*: ?Array<string> */) {
+  unloadObjectFromGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
     let globalTarget = global
-    let nonGlobalTarget = this.__global
     if (prefixes && prefixes[0]) {
       globalTarget = globalTarget[prefixes[0]]
-      nonGlobalTarget = nonGlobalTarget[prefixes[0]]
     }
+
+    if (!globalTarget) return
+
     for (let name in obj) {
       delete globalTarget[name]
     }
@@ -290,6 +309,8 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
   __loadHook(hookName /*: string */, hookClass /*: any */) {
+    if (!hookClass) return
+
     const regularHookName = _.camelCase(hookName)
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Succeeded}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Failed}`] = Symbol()
@@ -306,6 +327,10 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Succeeded}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Failed}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Did}`] = Symbol()
+    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Will}`] = Symbol()
+    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Succeeded}`] = Symbol()
+    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Failed}`] = Symbol()
+    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Did}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Will}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Succeeded}`] = Symbol()
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Failed}`] = Symbol()
@@ -316,12 +341,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Did}`] = Symbol()
 
     try {
+      hookClass = utilMixin(hookClass)
       const hook = new hookClass()
-      mergeWithProp(hook, utilTrait, {
-        __name: regularHookName,
-        __frameworkCore: this,
-        __logger: this.__logger.scope('hook', hook.__name)
-      })
+      hook.__name = regularHookName
+      hook.__frameworkCore = this
+      hook.__logger = this.__logger.scope('hook', regularHookName)
       this.__hooks[regularHookName] = hook
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
@@ -342,11 +366,13 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     try {
       this.__callHookDefaultsMethods()
       this.__callHookConfigureMethods()
-      await this.__loadAppFiles()
       await this.__callHookInitializeMethods()
+      this.__callHookRegisterMixinsMethods()
+      this.reloadGlobal()
       this.__callHookRegisterActionsMethods()
       this.__callHookBindActionsToRoutesMethods()
       this.__checkAllHooksLoadedSuccessfully()
+      await this.__loadAppFiles()
       this.__applyLoadedConfig()
       this.__bindActionsToRoutes()
       this.reloadGlobal()
@@ -453,6 +479,28 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
         this.emit(this.__events.core.didHappenError, e)
       }
       this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Did}`])
+    }
+  }
+
+  __callHookRegisterMixinsMethods() {
+    for (let hookName in this.__hooks) {
+      const hook = this.__hooks[hookName]
+      if (!hook.registerMixins) return
+      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Will}`])
+      try {
+        const mixins = hook.registerMixins()
+        this.__mixins[hookName] = {}
+        for (let mixinName in mixins) {
+          const mixin = mixins[mixinName]
+          this.__mixins[hookName][mixinName] = this.__wrapMixin(mixin)
+        }
+        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Succeeded}`])
+      } catch (e) {
+        hook.__err = e
+        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Failed}`], e)
+        this.emit(this.__events.core.didHappenError, e)
+      }
+      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Did}`])
     }
   }
 

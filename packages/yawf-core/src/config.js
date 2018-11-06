@@ -38,6 +38,12 @@ export default {
       Failed: 'FailedCallConfigure',
       Did: 'DidCallConfigure'
     },
+    RegisterMixins: {
+      Will: 'WillCallRegisterMixins',
+      Succeeded: 'SucceededCallRegisterMixins',
+      Failed: 'FailedCallRegisterMixins',
+      Did: 'DidCallRegisterMixins'
+    },
     RegisterActions: {
       Will: 'WillCallRegisterActions',
       Succeeded: 'SucceededCallRegisterActions',

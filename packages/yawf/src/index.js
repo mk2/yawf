@@ -2,8 +2,11 @@
 import { Starter } from '@yawf/yawf-core'
 import coreHooks from '@yawf/yawf-core-hooks'
 
-export Hook from '@yawf/yawf-core'
-export Logic from '@yawf/yawf-core'
+import _Hook from '@yawf/yawf-core'
+import _Logic from '@yawf/yawf-core'
+
+export const Hook = _Hook
+export const Logic = _Logic
 
 /*::
 export type YawfOptions = {

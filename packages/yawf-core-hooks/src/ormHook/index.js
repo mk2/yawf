@@ -45,11 +45,29 @@ export default class extends Hook {
       delete models[key]
     }
     this.$registerGlobal(models)
-    const globalFuncs = {}
-    globalFuncs['$db'] = (() => this.sequelize).bind(this)
-    globalFuncs['$transaction'] = () => ((...args) => this.sequelize.transaction(...args)).bind(this)
-    globalFuncs['$query'] = () => ((...args) => this.sequelize.query(...args)).bind(this)
-    this.$registerGlobal(globalFuncs)
+  }
+
+  registerMixins() {
+    const sequelize = this.sequelize
+    return {
+      utilMixin(Base /*: Class<any> */) /*: Class<any> */ {
+        return class extends Base {
+
+          get $db() {
+            return sequelize
+          }
+
+          $transaction(...args /*: any */) {
+            return sequelize.transaction(...args)
+          }
+
+          $query(...args /*: any */) {
+            return sequelize.query(...args)
+          }
+
+        }
+      }
+    }
   }
 
 }
