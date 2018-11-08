@@ -2,11 +2,8 @@
 import { Starter } from '@yawf/yawf-core'
 import coreHooks from '@yawf/yawf-core-hooks'
 
-import _Hook from '@yawf/yawf-core'
-import _Logic from '@yawf/yawf-core'
-
-export const Hook = _Hook
-export const Logic = _Logic
+import Hook from '@yawf/yawf-core'
+import Logic from '@yawf/yawf-core'
 
 /*::
 export type YawfOptions = {
@@ -14,7 +11,7 @@ export type YawfOptions = {
 }
  */
 
-export async function yawf(options /*: YawfOptions */) {
+async function yawf(options /*: YawfOptions */) {
   const useCoreHooks = !!options.useCoreHooks
   const starter = new Starter()
   starter.core.on(starter.events.core.didHappenError, (e) => {
@@ -38,4 +35,13 @@ export async function yawf(options /*: YawfOptions */) {
 
 function loadCoreHooks(core) {
   core.loadHooks(coreHooks)
+}
+
+export default {
+  Hook,
+  Logic,
+  yawf,
+  get mixins() {
+    return global.__frameworkCore.__mixins
+  }
 }

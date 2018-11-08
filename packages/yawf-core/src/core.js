@@ -180,12 +180,10 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __loadBaseToGlobal() {
     this.__loadCoreToGlobal()
-    this.__loadMixinsToGlobal()
   }
 
   __unloadBaseFromGlobal() {
     this.__unloadCoreFromGlobal()
-    this.__unloadMixinsFromGlobal()
   }
 
   __loadCoreToGlobal() {
@@ -198,18 +196,6 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     this.unloadObjectFromGlobal({
       [this.__config.app.globalName]: this
     })
-  }
-
-  __loadMixinsToGlobal() {
-    for (let category in this.__mixins) {
-      this.loadObjectToGlobal(this.__mixins[category], 'mixins', category)
-    }
-  }
-
-  __unloadMixinsFromGlobal() {
-    for (let category in this.__mixins) {
-      this.unloadObjectFromGlobal(this.__mixins[category], 'mixins', category)
-    }
   }
 
   __wrapMixin(mixin /*: Mixin */) /*: Mixin */ {
