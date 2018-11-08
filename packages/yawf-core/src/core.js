@@ -3,9 +3,8 @@
 import EventEmitter from 'events'
 import FrameworkEvents from './framework-events'
 import path from 'path'
-import { fs } from './util'
 import _ from 'lodash'
-import { readfiles, isClass, mapKeysDeep, mergeWithProp } from './util'
+import { fs, readfiles, isClass, mapKeysDeep, mergeWithProp } from './util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import utilMixin from './forApp/utilMixin'
@@ -20,6 +19,7 @@ export type ServerApi = $Application
 export type Req = $Request
 export type Res = $Response
 export type NextFn = NextFunction
+export type Mixin = (Class<any>) => Class<any>
 
 type CoreStartOptions = {
 }
@@ -62,6 +62,7 @@ export interface InternalCoreApi extends CoreApi {
   __serverApi: ?ServerApi;
   __rootDir: ?string;
   __events: any;
+  __mixins: { [string]: { [string]: Mixin } };
   __middlewares: Array<Middleware>;
 }
  */
@@ -211,8 +212,8 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
-  __wrapMixin(mixin /*: Function */) /*: Function */ {
-    return Base => Base ? mixin(Base) : mixin(class {})
+  __wrapMixin(mixin /*: Mixin */) /*: Mixin */ {
+    return Base => isClass(Base) ? mixin(Base) : mixin(class {})
   }
 
   loadObjectToGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {

@@ -1,6 +1,8 @@
 // @flow
 
 /*::
+import Mixin from '../core'
+
 export interface HookApi {
   defaults(): any;
   configure(): any;
