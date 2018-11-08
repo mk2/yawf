@@ -1,9 +1,19 @@
 export default class {
 
-  static definition({ DataTypes, Op }) {
+  columns({ DataTypes, Op }) {
     return {
       title:   DataTypes.STRING,
       content: DataTypes.TEXT
+    }
+  }
+
+  getterMethods() {
+    return {
+    }
+  }
+
+  setterMethods() {
+    return {
     }
   }
 

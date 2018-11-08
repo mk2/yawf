@@ -1,6 +1,6 @@
 export default class {
 
-  static definition({ DataTypes, Op }) {
+  columns({ DataTypes, Op }) {
     return {
       name: DataTypes.STRING
     }

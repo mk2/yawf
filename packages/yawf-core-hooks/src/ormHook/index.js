@@ -19,7 +19,13 @@ export default class extends Hook {
         dialect: 'sqlite',
         storage: null,
         operatorsAliases: false
-      }
+      },
+      defaultDefineOptions: {
+        freezeTableName: true
+      },
+      requiredUserModelMethods: [
+        'columns'
+      ]
     }
   }
 
@@ -37,12 +43,30 @@ export default class extends Hook {
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]
-      const model = this.sequelize.define(regularModelName, userModel.definition({ DataTypes: Sequelize.DataTypes, Op: Sequelize.Op }))
+
+      if (!this.__validateUserModel(userModel)) {
+        this.$error(new Error(`${regularModelName} is not satisfied userModel definitions.`))
+        continue
+      }
+
+      const modelDefinitions = new userModel()
+      const columns       = modelDefinitions.columns({ DataTypes: Sequelize.DataTypes, Op: Sequelize.Op })
+      const options       = _.defaultTo(modelDefinitions.options ? modelDefinitions.options() : null, _.cloneDeep(hookConfig.defaultDefineOptions))
+      const getterMethods = _.defaultTo(modelDefinitions.getterMethods ? modelDefinitions.getterMethods() : null, {})
+      const setterMethods = _.defaultTo(modelDefinitions.setterMethods ? modelDefinitions.setterMethods() : null, {})
+      _.merge(options, { getterMethods, setterMethods })
+
+      const model = this.sequelize.define(regularModelName, columns, options)
       model.sync()
       models[regularModelName] = () => model
       delete models[key]
     }
     this.models = models
+  }
+
+  __validateUserModel(userModel) {
+    const requiredUserModelMethods = this.$hookConfig.requiredUserModelMethods
+    return _.size(_.filter(_.at(userModel, requiredUserModelMethods, _.isNil))) === 0
   }
 
   registerMixins() {
