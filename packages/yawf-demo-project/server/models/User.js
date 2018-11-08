@@ -1,6 +1,6 @@
 export default class {
 
-  static definition() {
+  static definition({ DataTypes, Op }) {
     return {
       name: DataTypes.STRING
     }

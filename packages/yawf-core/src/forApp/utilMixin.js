@@ -74,14 +74,6 @@ export default function(Base /*: Class<any> */) /*: Class<any> */ {
       return this.$core.emit(event, ...args)
     }
 
-    $registerGlobal(obj /*: any */, ...prefixes /*: Array<string> */) {
-      return this.$core.loadObjectToGlobal(obj, ...prefixes)
-    }
-
-    $reloadGlobal() {
-      return this.$core.reloadGlobal()
-    }
-
     $on(event /*: any */, listenFn /*: Function */) {
       return this.$core.on(event, listenFn)
     }

@@ -7,6 +7,8 @@ export default class extends Hook {
 
   sequelize /*: any */ = null
 
+  models /*: any */ = {}
+
   defaults() {
     return {
       databaseName: 'yawf-demo',
@@ -29,29 +31,30 @@ export default class extends Hook {
     const options = hookConfig.options
     const defaultStorage = path.resolve(this.$rootDir, dbName + '.db')
     options.storage = options.storage || defaultStorage
-    options.logging = this.__logger.scope('sequelize').debug
+    options.logging = this.$logger.scope('sequelize').debug
     this.sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
-    this.$registerGlobal({
-      DataTypes: Sequelize.DataTypes,
-      Op: Sequelize.Op
-    })
     const models = await this.$readfiles(this.$rootDir, [ 'server', 'models' ])
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]
-      const model = this.sequelize.define(regularModelName, userModel.definition())
+      const model = this.sequelize.define(regularModelName, userModel.definition({ DataTypes: Sequelize.DataTypes, Op: Sequelize.Op }))
       model.sync()
       models[regularModelName] = () => model
       delete models[key]
     }
-    this.$registerGlobal(models)
+    this.models = models
   }
 
   registerMixins() {
     const sequelize = this.sequelize
+    const models = this.models
     return {
       utilMixin(Base /*: Class<any> */) /*: Class<any> */ {
         return class extends Base {
+
+          get $models() {
+            return models
+          }
 
           get $db() {
             return sequelize

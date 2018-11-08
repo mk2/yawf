@@ -54,6 +54,7 @@ export async function readfiles(rootDir /* string */, dirs /* Array<string> | st
     try {
       module = dedef(await import(path.resolve(rootDir, filePath)))
     } catch (e) {
+      console.error(e)
       errors.push(e)
     }
 
