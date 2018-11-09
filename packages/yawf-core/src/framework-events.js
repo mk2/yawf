@@ -17,11 +17,6 @@ export default {
   },
 
   /*
-   * Hook Events
-   */
-  hook: {},
-
-  /*
    * Custom Events
    */
   custom: {}

@@ -23,7 +23,7 @@ export default class extends Hook {
       defaultDefineOptions: {
         freezeTableName: true
       },
-      requiredUserModelMethods: [
+      requiredModelDefinitionProperties: [
         'columns'
       ]
     }
@@ -43,30 +43,32 @@ export default class extends Hook {
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]
+      const modelDefinition = new userModel()
 
-      if (!this.__validateUserModel(userModel)) {
-        this.$error(new Error(`${regularModelName} is not satisfied userModel definitions.`))
+      if (!this.__validateModelDefinition(modelDefinition)) {
+        this.$error(new Error(`${regularModelName} has valid model definition.`))
         continue
+      } else {
+        this.$debug(`${regularModelName} has invalid model definition.`)
       }
 
-      const modelDefinitions = new userModel()
-      const columns       = modelDefinitions.columns({ DataTypes: Sequelize.DataTypes, Op: Sequelize.Op })
-      const options       = _.defaultTo(modelDefinitions.options ? modelDefinitions.options() : null, _.cloneDeep(hookConfig.defaultDefineOptions))
-      const getterMethods = _.defaultTo(modelDefinitions.getterMethods ? modelDefinitions.getterMethods() : null, {})
-      const setterMethods = _.defaultTo(modelDefinitions.setterMethods ? modelDefinitions.setterMethods() : null, {})
+      const columns       = modelDefinition.columns({ DataTypes: Sequelize.DataTypes, Op: Sequelize.Op })
+      const options       = _.defaultTo(modelDefinition.options ? modelDefinitions.options() : null, _.cloneDeep(hookConfig.defaultDefineOptions))
+      const getterMethods = _.defaultTo(modelDefinition.getterMethods ? modelDefinition.getterMethods() : null, {})
+      const setterMethods = _.defaultTo(modelDefinition.setterMethods ? modelDefinition.setterMethods() : null, {})
       _.merge(options, { getterMethods, setterMethods })
 
       const model = this.sequelize.define(regularModelName, columns, options)
       model.sync()
-      models[regularModelName] = () => model
       delete models[key]
+      models[regularModelName] = () => model
     }
     this.models = models
   }
 
-  __validateUserModel(userModel) {
-    const requiredUserModelMethods = this.$hookConfig.requiredUserModelMethods
-    return _.size(_.filter(_.at(userModel, requiredUserModelMethods, _.isNil))) === 0
+  __validateModelDefinition(modelDefinition) {
+    const requiredModelDefinitionProperties = this.$hookConfig.requiredModelDefinitionProperties
+    return _.size(_.filter(_.at(modelDefinition, requiredModelDefinitionProperties), _.isNil)) === 0
   }
 
   registerMixins() {

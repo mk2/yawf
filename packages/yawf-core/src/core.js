@@ -299,33 +299,6 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     if (!hookClass) return
 
     const regularHookName = _.camelCase(hookName)
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Load.Did}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Defaults.Will}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Defaults.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Defaults.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Defaults.Did}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Initialize.Will}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Initialize.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Initialize.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Initialize.Did}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Will}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.Configure.Did}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Will}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterMixins.Did}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Will}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.RegisterActions.Did}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Will}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Succeeded}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Failed}`] = Symbol()
-    this.__events.hook[`${regularHookName}${this.__config.hookEventName.BindActionsToRoutes.Did}`] = Symbol()
 
     try {
       hookClass = utilMixin(hookClass)
@@ -437,17 +410,12 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.defaults) return
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Defaults.Will}`])
       try {
         if (!this.__config.hook[hookName]) this.__config.hook[hookName] = {}
         _.merge(this.__config.hook, { [hookName]: hook.defaults() })
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Defaults.Succeeded}`])
       } catch (e) {
         hook.__err = e
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Defaults.Failed}`], e)
-        this.emit(this.__events.core.didHappenError, e)
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Defaults.Did}`])
     }
   }
 
@@ -455,17 +423,12 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.configure) return
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Will}`])
       try {
         if (!this.__config.hook[hookName]) this.__config.hook[hookName] = {}
         _.merge(this.__config.hook, { [hookName]: hook.configure() })
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Succeeded}`])
       } catch (e) {
         hook.__err = e
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Failed}`], e)
-        this.emit(this.__events.core.didHappenError, e)
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Configure.Did}`])
     }
   }
 
@@ -473,7 +436,6 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.registerMixins) return
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Will}`])
       try {
         const mixins = hook.registerMixins()
         this.__mixins[hookName] = {}
@@ -481,13 +443,9 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
           const mixin = mixins[mixinName]
           this.__mixins[hookName][mixinName] = this.__wrapMixin(mixin)
         }
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Succeeded}`])
       } catch (e) {
         hook.__err = e
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Failed}`], e)
-        this.emit(this.__events.core.didHappenError, e)
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterMixins.Did}`])
     }
   }
 
@@ -495,16 +453,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.registerActions) return
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterActions.Will}`])
       try {
         this.loadActions(hook.registerActions())
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterActions.Succeeded}`])
       } catch (e) {
         hook.__err = e
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterActions.Failed}`], e)
-        this.emit(this.__events.core.didHappenError, e)
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.RegisterActions.Did}`])
     }
   }
 
@@ -513,18 +466,13 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.bindActionsToRoutes) return
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.BindActionsToRoutes.Will}`])
       try {
         const routes = hook.bindActionsToRoutes()
         _.merge(routes, this.__config.routes)
         _.merge(this.__config.routes, routes)
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.BindActionsToRoutes.Succeeded}`])
       } catch (e) {
         hook.__err = e
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.BindActionsToRoutes.Failed}`], e)
-        this.emit(this.__events.core.didHappenError, e)
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.BindActionsToRoutes.Did}`])
     }
   }
 
@@ -532,16 +480,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (!hook.initialize) return
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Initialize.Will}`])
       try {
         await hook.initialize()
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Initialize.Succeeded}`])
       } catch (e) {
         hook.__err = e
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Initialize.Failed}`], e)
-        this.emit(this.__events.core.didHappenError, e)
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Initialize.Did}`])
     }
   }
 
@@ -549,13 +492,11 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     for (let hookName in this.__hooks) {
       const hook = this.__hooks[hookName]
       if (hook.__err) {
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Failed}`], hook.__err)
+        this.__logger.error(hook.__err)
         this.emit(this.__events.core.hookFailedLoad, { hookName: hook.__name, err: hook.__err })
       } else {
-        this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Succeeded}`])
         this.emit(this.__events.core.hookSucceededLoad, { hookName: hook.__name })
       }
-      this.emit(this.__events.hook[`${hookName}${this.__config.hookEventName.Load.Did}`])
       hook.__isLoaded = true
     }
   }
