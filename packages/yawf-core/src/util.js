@@ -19,8 +19,8 @@ export function dedef(obj) {
 
 export async function readfiles(rootDir /* string */, dirs /* Array<string> | string */, _options = {}) {
   const options = _.merge({
-    ext: 'js', 
-    useIndex: true 
+    ext: 'js',
+    useIndex: true
   }, _options)
   const { ext, useIndex } = options
   dirs = Array.isArray(dirs) ? dirs : [ dirs ]
@@ -40,7 +40,7 @@ export async function readfiles(rootDir /* string */, dirs /* Array<string> | st
 
     if (dirname) {
       for (let dirname of dirnames.split(path.sep)) {
-        dirname = _.camelCase(dirname) 
+        dirname = _.camelCase(dirname)
         if (!dir[dirname]) {
           dir[dirname] = {}
         }
@@ -80,7 +80,7 @@ export function mapKeysDeep(obj, cb, nestKeys = []) {
   const wrapCb = (v, k ,o) => (cb(v, k, o, nestKeys), k)
   _.mapValues(
     _.mapKeys(obj, wrapCb),
-    (val, key) => { 
+    (val, key) => {
       return _.isObject(val) ? mapKeysDeep(val, cb, nestKeys.concat(key)) : val
     }
   )

@@ -47,7 +47,7 @@ export default class Starter /*:: implements InternalStarterApi */ {
       options
     })
   }
-  
+
   get rootDir() {
     return this.__rootDir
   }
@@ -113,4 +113,3 @@ export default class Starter /*:: implements InternalStarterApi */ {
   }
 
 }
-
