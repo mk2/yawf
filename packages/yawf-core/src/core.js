@@ -2,9 +2,8 @@
 
 import EventEmitter from 'events'
 import FrameworkEvents from './framework-events'
-import path from 'path'
 import _ from 'lodash'
-import { fs, readfiles, isClass, mapKeysDeep, mergeWithProp } from './util'
+import { readfiles, isClass, mapKeysDeep } from './util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import utilMixin from './forApp/utilMixin'
@@ -256,7 +255,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
       this.emit(this.__events.core.didHappenError, e)
       return
     }
-    
+
     this.loadActions(actions)
   }
 
