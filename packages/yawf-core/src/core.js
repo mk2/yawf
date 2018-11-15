@@ -358,25 +358,25 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
   __configureViewEngine() {
-    const serverApi = this.__serverApi
     if (!this.__config.viewTemplate.engine) return
     if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
-    if (!serverApi) return
+    if (!this.__serverApi) return
+    const serverApi = this.__serverApi
 
     serverApi.set('view engine', this.__config.viewTemplate.engine)
   }
 
   __configureViews() {
-    const serverApi = this.__serverApi
     if (!this.__config.app.viewsDirs) return
-    if (!serverApi) return
+    if (!this.__serverApi) return
+    const serverApi = this.__serverApi
 
     serverApi.set('views', this.__config.app.viewsDirs)
   }
 
   __configureBodyParser() {
+    if (!this.__serverApi) return
     const serverApi = this.__serverApi
-    if (!serverApi) return
 
     serverApi.use(bodyParser.json())
     serverApi.use(bodyParser.urlencoded({ extended: true }))
