@@ -7,6 +7,7 @@ import { readfiles, isClass, mapKeysDeep } from './util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import utilMixin from './forApp/utilMixin'
+import bodyParser from 'body-parser'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -342,8 +343,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   }
 
   __applyLoadedConfig() {
-    this.__configureViewEngine()
-    this.__configureViews()
+    this.__configureServerApi()
     if (this.__serverApi) {
       for (let middleware of this.__middlewares) {
         this.__serverApi.use(middleware)
@@ -351,19 +351,35 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
     }
   }
 
+  __configureServerApi() {
+    this.__configureViewEngine()
+    this.__configureViews()
+    this.__configureBodyParser()
+  }
+
   __configureViewEngine() {
+    const serverApi = this.__serverApi
     if (!this.__config.viewTemplate.engine) return
     if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
-    if (!this.__serverApi) return
+    if (!serverApi) return
 
-    this.__serverApi.set('view engine', this.__config.viewTemplate.engine)
+    serverApi.set('view engine', this.__config.viewTemplate.engine)
   }
 
   __configureViews() {
+    const serverApi = this.__serverApi
     if (!this.__config.app.viewsDirs) return
-    if (!this.__serverApi) return
+    if (!serverApi) return
 
-    this.__serverApi.set('views', this.__config.app.viewsDirs)
+    serverApi.set('views', this.__config.app.viewsDirs)
+  }
+
+  __configureBodyParser() {
+    const serverApi = this.__serverApi
+    if (!serverApi) return
+
+    serverApi.use(bodyParser.json())
+    serverApi.use(bodyParser.urlencoded({ extended: true }))
   }
 
   __bindActionsToRoutes() {
