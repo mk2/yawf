@@ -98,3 +98,13 @@ export function mergeWithProp(obj, ...srcs) {
   }
   return obj
 }
+
+export function extractHookName(str) {
+  if (_.startsWith(str, 'yawf-hook-')) {
+    return _.camelCase(str.substr(10))
+  } else if (_.startsWith(str, 'yawfHook')) {
+    return _.camelCase(str.substr(8))
+  } else {
+    return _.camelCase(str)
+  }
+}

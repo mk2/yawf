@@ -4,7 +4,7 @@ const path = require('path')
 
 describe('util module test suite', () => {
 
-  test('readfiles normally worked', async () => {
+  test('readfiles normally worked.', async () => {
     const moduleMap = await util.readfiles(__dirname, 'mock')
     const test0obj = require('./mock/test0')
     const test1obj = require('./mock/test1')
@@ -12,7 +12,7 @@ describe('util module test suite', () => {
     expect(moduleMap.test1).toMatchObject(test1obj)
   })
 
-  test('', async () => {
+  test('mapKeysDeep normally worked.', async () => {
     util.mapKeysDeep({
       a: {
         b: 'b value',
@@ -25,6 +25,12 @@ describe('util module test suite', () => {
     }, (v, k, o, nest) => {
       console.log(nest, v)
     })
+  })
+
+  test('extractHookName normally worked.', () => {
+    expect(util.extractHookName('yawf-hook-orm')).toBe('orm')
+    expect(util.extractHookName('yawf-hook-webpack')).toBe('webpack')
+    expect(util.extractHookName('yawf-orm')).toBe('yawfOrm')
   })
 
 })
