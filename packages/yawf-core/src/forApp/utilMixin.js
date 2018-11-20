@@ -3,6 +3,7 @@
 /*::
 import InternalCoreApi from '../core'
 import type { Middleware } from 'express'
+import type { InternalHookApi } from './hook'
  */
 
 import { readfiles, isClass, mergeWithProp } from '../util'
@@ -46,7 +47,7 @@ export default function(Base /*: Class<any> */) /*: Class<any> */ {
       return this.$core.__config
     }
 
-    get $hooks() /*: { [string]: any } */ {
+    get $hooks() /*: { [string]: InternalHookApi } */ {
       return this.$core.__hooks
     }
 

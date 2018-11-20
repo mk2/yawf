@@ -1,13 +1,19 @@
+// @flow
+
 import path from 'path'
 import Sequelize from 'sequelize'
 import { Hook } from '@yawf/yawf-core'
 import _ from 'lodash'
 
+/*::
+import { Model } from 'sequelize'
+ */
+
 export default class extends Hook {
 
-  sequelize /*: any */ = null
+  sequelize /*: ?Sequelize */ = null
 
-  models /*: any */ = {}
+  models /*: { [string]: Model<any, any, any> } */ = {}
 
   defaults() {
     return {
@@ -38,7 +44,7 @@ export default class extends Hook {
     const defaultStorage = path.resolve(this.$rootDir, dbName + '.db')
     options.storage = options.storage || defaultStorage
     options.logging = this.$logger.scope('sequelize').debug
-    this.sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
+    const sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
     const models = await this.$readfiles(this.$rootDir, [ 'server', 'models' ])
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
@@ -52,21 +58,22 @@ export default class extends Hook {
         this.$debug(`${regularModelName} has invalid model definition.`)
       }
 
-      const columns       = modelDefinition.columns({ DataTypes: Sequelize.DataTypes, Op: Sequelize.Op })
-      const options       = _.defaultTo(modelDefinition.options ? modelDefinitions.options() : null, _.cloneDeep(hookConfig.defaultDefineOptions))
+      const columns       = modelDefinition.columns({ DataTypes: Sequelize, Op: Sequelize.Op })
+      const options       = _.defaultTo(modelDefinition.options ? modelDefinition.options() : null, _.cloneDeep(hookConfig.defaultDefineOptions))
       const getterMethods = _.defaultTo(modelDefinition.getterMethods ? modelDefinition.getterMethods() : null, {})
       const setterMethods = _.defaultTo(modelDefinition.setterMethods ? modelDefinition.setterMethods() : null, {})
       _.merge(options, { getterMethods, setterMethods })
 
-      const model = this.sequelize.define(regularModelName, columns, options)
+      const model = sequelize.define(regularModelName, columns, options)
       model.sync()
       delete models[key]
       models[regularModelName] = () => model
     }
     this.models = models
+    this.sequelize = sequelize
   }
 
-  __validateModelDefinition(modelDefinition) {
+  __validateModelDefinition(modelDefinition /*: any */) {
     const requiredModelDefinitionProperties = this.$hookConfig.requiredModelDefinitionProperties
     return _.size(_.filter(_.at(modelDefinition, requiredModelDefinitionProperties), _.isNil)) === 0
   }
@@ -78,20 +85,20 @@ export default class extends Hook {
       utilMixin(Base /*: Class<any> */) /*: Class<any> */ {
         return class extends Base {
 
-          get $models() {
+          get $models() /*: { [string]: Model<any, any, any> } */ {
             return models
           }
 
-          get $db() {
+          get $db() /*: ?Sequelize */ {
             return sequelize
           }
 
           $transaction(...args /*: any */) {
-            return sequelize.transaction(...args)
+            if (sequelize) sequelize.transaction(...args)
           }
 
           $query(...args /*: any */) {
-            return sequelize.query(...args)
+            if (sequelize) sequelize.query(...args)
           }
 
         }

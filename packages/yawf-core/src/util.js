@@ -17,13 +17,14 @@ export function dedef(obj /*: any */) {
   return obj.default ? obj.default : obj
 }
 
-export async function readfiles(rootDir /*: string */, dirs /*: Array<string> | string */, _options /*: any */ = {}) {
+export async function readfiles(rootDir /*: ?string */, dirs /*: Array<string> | string */, _options /*: any */ = {}) {
   const options = _.merge({
     ext: 'js',
     useIndex: true
   }, _options)
   const { ext, useIndex } = options
   dirs = Array.isArray(dirs) ? dirs : [ dirs ]
+  rootDir = rootDir ? rootDir : process.cwd()
   const filePathList = glob.sync(path.join(...dirs, '**', `*.${ext}`), { cwd: rootDir })
 
   const errors = []
