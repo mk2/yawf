@@ -328,7 +328,6 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
       this.__callHookConfigureMethods()
       await this.__callHookInitializeMethods()
       this.__callHookRegisterMixinsMethods()
-      this.reloadGlobal()
       this.__callHookRegisterActionsMethods()
       this.__callHookBindActionsToRoutesMethods()
       this.__checkAllHooksLoadedSuccessfully()
