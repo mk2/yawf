@@ -50,6 +50,7 @@ export interface CoreApi {
   on(any, Function): CoreApi;
   emit(any, ...args: Array<any>): boolean;
   loadObjectToGlobal(any): void;
+  shutdown(): ?Promise<any>;
 }
 
 export interface InternalCoreApi extends CoreApi {
@@ -489,6 +490,22 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
       if (!hook.initialize) return
       try {
         await hook.initialize()
+      } catch (e) {
+        hook.__err = e
+      }
+    }
+  }
+
+  async shutdown() {
+    await this.__callHookTeardownMethods()
+  }
+
+  async __callHookTeardownMethods() {
+    for (let hookName in this.__hooks) {
+      const hook = this.__hooks[hookName]
+      if (!hook.teardown) return
+      try {
+        await hook.teardown()
       } catch (e) {
         hook.__err = e
       }

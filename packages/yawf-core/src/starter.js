@@ -100,10 +100,23 @@ export default class Starter /*:: implements InternalStarterApi */ {
       core.emit(this.events.core.willStart)
       core.play(this.port, () => {})
       core.emit(this.events.core.didStart)
+      this.__observeProcessExit()
       core.emit(this.events.core.ready)
     } catch (e) {
       this.core.emit(this.events.core.didHappenError, e)
     }
+  }
+
+  __observeProcessExit() {
+    process.on('SIGINT', async () => {
+      await this.core.shutdown()
+    })
+    process.on('SIGTERM', async () => {
+      await this.core.shutdown()
+    })
+    process.on('exit', async () => {
+      await this.core.shutdown()
+    })
   }
 
 }

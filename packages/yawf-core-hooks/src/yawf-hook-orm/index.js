@@ -106,4 +106,8 @@ export default class extends Hook {
     }
   }
 
+  async teardown() {
+    this.$log('teardown yawf-hook-orm')
+  }
+
 }

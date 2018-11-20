@@ -10,6 +10,7 @@ export interface HookApi {
   registerMixins(): any;
   registerActions(): any;
   bindActionsToRoutes(): any;
+  teardown(): ?Promise<any>;
 }
 
 export interface InternalHookApi extends HookApi {
@@ -47,6 +48,9 @@ export default class Hook /*:: implements InternalHookApi */ {
 
   bindActionsToRoutes() {
     return {}
+  }
+
+  async teardown() {
   }
 
 }
