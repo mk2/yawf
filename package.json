@@ -9,10 +9,10 @@
     "cleanNodeModules": "lerna exec --parallel -- rimraf node_modules",
     "cleanLib": "lerna exec --parallel -- rimraf lib",
     "cleanPackageLockJson": "lerna exec --parallel -- rimraf package-lock.json",
-    "clean": "npm run cleanNodeModules; npm run cleanPackageLockJson; npm run cleanLib; npm run cleanTgz",
+    "clean": "npm run cleanNodeModules && npm run cleanPackageLockJson && npm run cleanLib && npm run cleanTgz",
     "packageInstall": "lerna bootstrap",
-    "packageTest": "npm run build; lerna run test",
-    "coreTest": "npm run build; lerna run --scope @yawf/yawf-core test",
+    "packageTest": "npm run build && lerna run test",
+    "coreTest": "npm run build && lerna run --scope @yawf/yawf-core test",
     "flow": "flow"
   },
   "devDependencies": {

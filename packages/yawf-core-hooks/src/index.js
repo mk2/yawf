@@ -1,7 +1,7 @@
-import ormHook from './ormHook'
-import webpackHook from './webpackHook'
+import orm from './yawf-hook-orm'
+import webpack from './yawf-hook-webpack'
 
 export default {
-  ormHook,
-  webpackHook
+  orm,
+  webpack
 }

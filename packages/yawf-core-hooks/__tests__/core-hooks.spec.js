@@ -9,7 +9,7 @@ describe('core-hooks', () => {
     starter.bootstrap()
     starter.core.loadHooks(coreHooks)
     await starter.initialize()
-    const ormHookMixinClass = starter.core.__mixins.ormHook.utilMixin()
+    const ormHookMixinClass = starter.core.__mixins.orm.utilMixin()
     const ormHookMixinInstance = new ormHookMixinClass()
     expect(ormHookMixinInstance.$models.User).toBeDefined()
   })
