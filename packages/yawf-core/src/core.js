@@ -50,11 +50,9 @@ export interface CoreApi {
   on(any, Function): CoreApi;
   emit(any, ...args: Array<any>): boolean;
   loadObjectToGlobal(any): void;
-  +global: any;
 }
 
 export interface InternalCoreApi extends CoreApi {
-  __global: any;
   __logger: any;
   __config: any;
   __actions: { [string]: any };
@@ -69,7 +67,6 @@ export interface InternalCoreApi extends CoreApi {
 
 export default class Core extends EventEmitter /*:: implements InternalCoreApi */ {
 
-  __global = {}
   __config = {}
   __actions = {}
   __hooks = {}
@@ -112,10 +109,6 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
     this.__mixins.core = {
       utilMixin: this.__wrapMixin(utilMixin)
     }
-  }
-
-  get global() {
-    return this.__global
   }
 
   on(event /*: any */, listenFn /*: Function */) /*: this */ {
