@@ -18,7 +18,6 @@ export interface StarterApi {
   +port: number;
   +core: ?InternalCoreApi;
   +events: any;
-  +global: any;
 }
 
 interface InternalStarterApi extends StarterApi {
@@ -68,11 +67,6 @@ export default class Starter /*:: implements InternalStarterApi */ {
   get logger() {
     if (!this.core) return console
     return this.core.__logger
-  }
-
-  get global() {
-    if (!this.core) return global
-    return this.core.global
   }
 
   bootstrap() {

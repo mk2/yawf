@@ -1,4 +1,6 @@
 [ignore]
+.*/lib/.*
+.*/__tests__/.*
 
 [include]
 
