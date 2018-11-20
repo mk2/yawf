@@ -3,7 +3,7 @@
 import EventEmitter from 'events'
 import FrameworkEvents from './framework-events'
 import _ from 'lodash'
-import { readfiles, isClass, mapKeysDeep } from './util'
+import { readmodules, isClass, mapKeysDeep } from './util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import utilMixin from './forApp/utilMixin'
@@ -67,7 +67,7 @@ export interface InternalCoreApi extends CoreApi {
 }
  */
 
-export default class extends EventEmitter /*:: implements InternalCoreApi */ {
+export default class Core extends EventEmitter /*:: implements InternalCoreApi */ {
 
   __global = {}
   __config = {}
@@ -239,7 +239,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
 
   async __loadConfigFiles() {
     try {
-      const config = (await readfiles(this.__rootDir, 'config'))
+      const config = (await readmodules(this.__rootDir, 'config'))
       _.merge(this.__config, config)
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
@@ -251,7 +251,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppActions() {
     let actions /*: any */ = {}
     try {
-      actions = await readfiles(this.__rootDir, [ this.__config.app.appDir, this.__config.app.actionsDir ], { useIndex: false })
+      actions = await readmodules(this.__rootDir, [ this.__config.app.appDir, this.__config.app.actionsDir ], { useIndex: false })
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return
@@ -276,7 +276,7 @@ export default class extends EventEmitter /*:: implements InternalCoreApi */ {
   async __loadAppHooks() {
     let hooks /*: any */ = {}
     try {
-      hooks = await readfiles(this.__rootDir, [ this.__config.app.appDir, this.__config.app.hooksDir ])
+      hooks = await readmodules(this.__rootDir, [ this.__config.app.appDir, this.__config.app.hooksDir ])
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return

@@ -17,7 +17,27 @@ export function dedef(obj /*: any */) {
   return obj.default ? obj.default : obj
 }
 
-export async function readfiles(rootDir /*: ?string */, dirs /*: Array<string> | string */, _options /*: any */ = {}) {
+/**
+ * Read modules under given rootDir, returns as directory mapped object.
+ *
+ * e.g.:
+ *   Here are some files under a directory.
+ *   ------------------------
+ *   | /hoge
+ *   |   - test.js
+ *   |   /poge
+ *   |     - index.js
+ *   ------------------------
+ *  We can read these files with readmodules:
+ *  ```
+ *  const modules = readmodules(__dirname, 'hoge')
+ *  assert.deepStrictEqual(modules, {
+ *    'test': <<test.js module>>,
+ *    poge: <<poge/index.js module>>
+ *  })
+ *  ```
+ */
+export async function readmodules(rootDir /*: ?string */, dirs /*: Array<string> | string */, _options /*: any */ = {}) {
   const options = _.merge({
     ext: 'js',
     useIndex: true
@@ -31,7 +51,7 @@ export async function readfiles(rootDir /*: ?string */, dirs /*: Array<string> |
   let moduleMap = {}
 
   for (let filePath of filePathList) {
-    const dirnames = path.normalize(path.dirname(filePath))
+    const dirnames = path.normalize(path.dirname(filePath)) // path.normalize required for windows (git-bash) environment.
     const filename = path.basename(filePath, `.${ext}`)
     const isIndexFile = filename === 'index'
 
@@ -77,6 +97,9 @@ export function isClass(v /*: any */) {
     return typeof v === 'function' && /^\s*class\s+/.test(v.toString());
 }
 
+/**
+ * Walk around given object with given callback function.
+ */
 export function mapKeysDeep(obj /*: any */, cb /*: Function */, nestKeys /*: Array<string> */ = []) {
   const wrapCb = (v, k ,o) => (cb(v, k, o, nestKeys), k)
   _.mapValues(
@@ -87,6 +110,9 @@ export function mapKeysDeep(obj /*: any */, cb /*: Function */, nestKeys /*: Arr
   )
 }
 
+/**
+ * Merge given objects (srcs) to given object via property descriptor and return it.
+ */
 export function mergeWithProp(obj /*: any */, ...srcs /*: any */) {
   obj = obj || Object.create(null)
   for (let src of srcs) {
@@ -100,6 +126,9 @@ export function mergeWithProp(obj /*: any */, ...srcs /*: any */) {
   return obj
 }
 
+/**
+ * Extract hook name to canonical hook name.
+ */
 export function extractHookName(str /*: string */) {
   if (_.startsWith(str, 'yawf-hook-')) {
     return _.camelCase(str.substr(10))

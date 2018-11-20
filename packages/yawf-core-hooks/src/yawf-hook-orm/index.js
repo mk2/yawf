@@ -45,7 +45,7 @@ export default class extends Hook {
     options.storage = options.storage || defaultStorage
     options.logging = this.$logger.scope('sequelize').debug
     const sequelize = new Sequelize(dbName, dbUser, dbUserPassword, options)
-    const models = await this.$readfiles(this.$rootDir, [ 'server', 'models' ])
+    const models = await this.$readmodules(this.$rootDir, [ 'server', 'models' ])
     for (let key in models) {
       const regularModelName = _.upperFirst(_.camelCase(key))
       const userModel = models[key]

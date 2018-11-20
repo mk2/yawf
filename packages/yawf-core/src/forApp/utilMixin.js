@@ -6,9 +6,9 @@ import type { Middleware } from 'express'
 import type { InternalHookApi } from './hook'
  */
 
-import { readfiles, isClass, mergeWithProp } from '../util'
+import { readmodules, isClass, mergeWithProp } from '../util'
 
-export default function(Base /*: Class<any> */) /*: Class<any> */ {
+export default function utilMixin(Base /*: Class<any> */) /*: Class<any> */ {
   return class extends Base {
 
     get $logger() {
@@ -79,8 +79,8 @@ export default function(Base /*: Class<any> */) /*: Class<any> */ {
       return this.$core.on(event, listenFn)
     }
 
-    async $readfiles(...args /*: any */) {
-      return await readfiles(...args)
+    async $readmodules(...args /*: any */) {
+      return await readmodules(...args)
     }
 
     get $rootDir() {

@@ -4,8 +4,8 @@ const path = require('path')
 
 describe('util module test suite', () => {
 
-  test('readfiles normally worked.', async () => {
-    const moduleMap = await util.readfiles(__dirname, 'mock')
+  test('readmodules normally worked.', async () => {
+    const moduleMap = await util.readmodules(__dirname, 'mock')
     const test0obj = require('./mock/test0')
     const test1obj = require('./mock/test1')
     expect(moduleMap.test0).toMatchObject(test0obj)
