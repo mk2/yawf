@@ -13,6 +13,9 @@ export function basename(pathstr /*: string */) {
   return path.basename(pathstr, ext)
 }
 
+/**
+ * Return given object or a value of the key `default` of it.
+ */
 export function dedef(obj /*: any */) {
   return obj.default ? obj.default : obj
 }

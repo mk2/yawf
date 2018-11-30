@@ -23,8 +23,21 @@ describe('util module test suite', () => {
         }
       }
     }, (v, k, o, nest) => {
-      console.log(nest, v)
+      // console.log(nest, v)
+      if (nest.length === 0) {
+        expect(v).toEqual({ b: 'b value', c: { d: { e: 'e value' } } })
+      }
     })
+  })
+
+  test('dedef normally worked.', () => {
+    expect(util.dedef({ hello: 'world' })).toEqual({ hello: 'world' })
+    expect(util.dedef({ default: { hello: 'world' } })).toEqual({ hello: 'world' })
+  })
+
+  test('isClass normally worked.', () => {
+    expect(util.isClass(class {})).toBeTruthy()
+    expect(util.isClass(function() {})).toBeFalsy()
   })
 
   test('extractHookName normally worked.', () => {
