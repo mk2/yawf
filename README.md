@@ -1,5 +1,7 @@
 # yawf - Yet Another Web Framework
 
+[![Build status](https://ci.appveyor.com/api/projects/status/wi7bopax0e0efkup/branch/master?svg=true)](https://ci.appveyor.com/project/mk2/yawf/branch/master)
+
 - Simple and Easy
 - ESModule oriented
 - Inspired By Sails.js
