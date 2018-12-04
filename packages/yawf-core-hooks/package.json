@@ -1,6 +1,6 @@
 {
   "name": "@yawf/yawf-core-hooks",
-  "version": "0.1.10",
+  "version": "0.1.12",
   "description": "yawf hooks for basic usage",
   "author": "mk2 <mk2@mk2.red>",
   "homepage": "https://github.com/mk2/yawf/tree/master/packages/yawf-core-hooks",
@@ -23,7 +23,7 @@
     "url": "https://github.com/mk2/yawf/issues"
   },
   "dependencies": {
-    "@yawf/yawf-core": "^0.1.10",
+    "@yawf/yawf-core": "^0.1.12",
     "lodash": "^4.17.11",
     "sequelize": "^4.41.0",
     "sqlite3": "^4.0.3",
