@@ -1,0 +1,17 @@
+environment:
+  nodejs_version: "10"
+
+init:
+  - git config --global core.autocrlf true
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm i
+  - npm i -g lerna
+
+test_script:
+  - node --version
+  - npm --version
+  - npm run coreTest
+
+build: off
