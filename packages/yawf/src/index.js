@@ -3,7 +3,6 @@ import { Starter } from '@yawf/yawf-core'
 import coreHooks from '@yawf/yawf-core-hooks'
 
 import Hook from '@yawf/yawf-core'
-import Logic from '@yawf/yawf-core'
 
 /*::
 export type YawfOptions = {
@@ -39,7 +38,6 @@ function loadCoreHooks(core) {
 
 export default {
   Hook,
-  Logic,
   yawf,
   get mixins() {
     return global.__frameworkCore.__mixins
