@@ -22,7 +22,12 @@
     "url": "git+https://github.com/mk2/yawf.git"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "cypress:version": "cypress version",
+    "cypress:verify": "cypress verify",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "npm run start & cypress run"
   },
   "dependencies": {
     "@babel/cli": "^7.1.2",
@@ -36,5 +41,8 @@
     "@yawf/yawf": "^0.1.12",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-plugin-dynamic-import-node": "^2.2.0"
+  },
+  "devDependencies": {
+    "cypress": "^3.1.3"
   }
 }

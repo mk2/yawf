@@ -108,18 +108,19 @@ export default class Starter /*:: implements InternalStarterApi */ {
   }
 
   __observeProcessExit() {
-    process.on('SIGINT', async () => {
+    const exit = async () => {
       if (!this.core) return
-      await this.core.shutdown()
-    })
-    process.on('SIGTERM', async () => {
-      if (!this.core) return
-      await this.core.shutdown()
-    })
-    process.on('exit', async () => {
-      if (!this.core) return
-      await this.core.shutdown()
-    })
+      try {
+        await this.core.shutdown()
+        process.exit(0)
+      } catch (e) {
+        process.exit(1)
+      }
+    }
+
+    process.on('SIGINT', exit)
+    process.on('SIGTERM', exit)
+    process.on('exit', exit)
   }
 
 }

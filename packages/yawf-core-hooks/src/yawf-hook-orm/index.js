@@ -28,10 +28,7 @@ export default class extends Hook {
       },
       defaultDefineOptions: {
         freezeTableName: true
-      },
-      requiredModelDefinitionProperties: [
-        'columns'
-      ]
+      }
     }
   }
 
@@ -51,11 +48,11 @@ export default class extends Hook {
       const userModel = models[key]
       const modelDefinition = new userModel()
 
-      if (!this.__validateModelDefinition(modelDefinition)) {
-        this.$error(new Error(`${regularModelName} has valid model definition.`))
-        continue
+      if (this.__validateModelDefinition(modelDefinition)) {
+        this.$debug(`${regularModelName} has valid model definition.`)
       } else {
-        this.$debug(`${regularModelName} has invalid model definition.`)
+        this.$error(new Error(`${regularModelName} has invalid model definition.`))
+        continue
       }
 
       const columns       = modelDefinition.columns({ DataTypes: Sequelize, Op: Sequelize.Op })
@@ -67,15 +64,14 @@ export default class extends Hook {
       const model = sequelize.define(regularModelName, columns, options)
       model.sync()
       delete models[key]
-      models[regularModelName] = () => model
+      models[regularModelName] = model
     }
     this.models = models
     this.sequelize = sequelize
   }
 
   __validateModelDefinition(modelDefinition /*: any */) {
-    const requiredModelDefinitionProperties = this.$hookConfig.requiredModelDefinitionProperties
-    return _.size(_.filter(_.at(modelDefinition, requiredModelDefinitionProperties), _.isNil)) === 0
+    return !!modelDefinition.columns
   }
 
   registerMixins() {

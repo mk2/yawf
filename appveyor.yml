@@ -6,13 +6,20 @@ init:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm i
+  - npm ci
   - npm run packageInstall
-  - npm i -g lerna
+  - npx cypress cache path
+
+cache:
+  - '%AppData%\npm'
+  - '%USERPROFILE%\AppData\Local\Cypress\Cache'
 
 test_script:
   - node --version
   - npm --version
   - npm run coreTest
+  - npx cypress version
+  - npx cypress verify
+  - npm run demoTest
 
 build: off

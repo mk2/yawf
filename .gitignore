@@ -6,3 +6,4 @@ coverage/
 *.sqlite3
 *.db
 lerna-debug.log
+*.mp4
