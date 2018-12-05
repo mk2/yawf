@@ -20,6 +20,12 @@ test_script:
   - npm run coreTest
   - npx cypress version
   - npx cypress verify
-  - npm run demoTest
+  - cd packages
+  - cd yawf-demo-project
+  - ps: $ServerProcess = Start-Process npm start -PassThru
+  - npm run cypress:run -- --record
+
+on_finish:
+  - ps: Stop-Process -Id $ServerProcess.Id
 
 build: off
