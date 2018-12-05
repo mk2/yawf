@@ -23,7 +23,7 @@ test_script:
   - cd packages
   - cd yawf-demo-project
   - ps: $ServerProcess = Start-Process npm start -PassThru
-  - npm run cypress:run -- --record
+  - npm run cypress:run
 
 on_finish:
   - ps: Stop-Process -Id $ServerProcess.Id
