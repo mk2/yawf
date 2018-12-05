@@ -7,7 +7,7 @@ export interface HookApi {
   defaults(): any;
   configure(): any;
   initialize(): ?Promise<any>;
-  registerMixins(): any;
+  registerMixins(): { [string]: Mixin };
   registerActions(): any;
   bindActionsToRoutes(): any;
   teardown(): ?Promise<any>;
