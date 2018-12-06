@@ -1,13 +1,15 @@
 // @flow
 
+import path from 'path'
 import EventEmitter from 'events'
 import FrameworkEvents from './framework-events'
 import _ from 'lodash'
-import { readmodules, isClass, mapKeysDeep } from './util'
+import { readmodules, isClass, mapKeysDeep, globfiles } from './util'
 import defaultConfig from './config'
 import signale, { Signale } from 'signale'
 import utilMixin from './forApp/utilMixin'
 import bodyParser from 'body-parser'
+import { Worker } from 'worker_threads'
 
 /*::
 import type { $Application, $Request, $Response, NextFunction, Middleware } from 'express'
@@ -78,6 +80,7 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
   __middlewares = []
   __logger = signale
   __actionCallContext = {}
+  __tasks = {}
 
   constructor({ serverApi, rootDir, options } /*: ConstructorArguments */) {
     super()
@@ -227,6 +230,7 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
 
   async __loadAppFiles() {
     await this.__loadConfigFiles()
+    await this.__loadAppTasks()
     await this.__loadAppHooks()
     await this.__loadAppActions()
   }
@@ -304,6 +308,53 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       throw e
+    }
+  }
+
+  async __loadAppTasks() {
+    let taskfiles /*: { [string]: string } */ = {}
+    try {
+      taskfiles = globfiles(this.__rootDir)
+    } catch (e) {
+      this.emit(this.__events.core.didHappenError, e)
+      return
+    }
+
+    this.loadTasks(taskfiles)
+  }
+
+  loadTasks(taskfiles /*: { [string]: string } */) {
+    for (let taskfilename in taskfiles) {
+      try {
+        this.__loadTask(taskfilename, taskfiles[taskfilename])
+      } catch (e) {
+        this.emit(this.__events.core.didHappenError, e)
+      }
+    }
+  }
+
+  __loadTask(taskfilename /*: string */, taskfilepath /*: string */) {
+    if (!taskfilename || !taskfilepath) return
+
+    const regularTaskName = _.camelCase(taskfilename)
+
+    this.__tasks[regularTaskName] = function(input) {
+      return new Promise((resolve, reject) => {
+        const worker = new Worker(path.resolve(__dirname, 'taskRunner.js'), {
+          workerData: {
+            taskname: regularTaskName,
+            filename: taskfilepath,
+            input
+          }
+        })
+
+        worker.on('message', resolve)
+        worker.on('error', reject)
+        worker.on('exit', (code) => {
+          if (code !== 0)
+            reject(new Error(`Worker stopped with exit code ${code}`))
+        })
+      })
     }
   }
 

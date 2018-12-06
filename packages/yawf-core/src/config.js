@@ -9,6 +9,7 @@ export default {
     appDir: 'server',
     actionsDir: 'actions',
     hooksDir: 'hooks',
+    tasksDir: 'tasks',
     viewEngines: ['pug'],
     clientDir: 'client',
     viewsDirs: ['client', 'views']

@@ -20,6 +20,20 @@ export function dedef(obj /*: any */) {
   return obj.default ? obj.default : obj
 }
 
+export function globfiles(rootDir /*: string */, _options /*: any */ = {}) /*: { [string]: string } */ {
+  const options = _.merge({
+    ext: 'js',
+    useAbsolutePath: true
+  }, _options)
+  const { ext, useAbsolutePath } = options
+  const files = glob.sync(path.join('**', `*.${ext}`), { cwd: rootDir })
+  const filesobj = {}
+  for (let file of files) {
+    filesobj[path.basename(file, `.${ext}`)] = useAbsolutePath ? path.resolve(rootDir, file) : path.normalize(file)
+  }
+  return filesobj
+}
+
 /**
  * Read modules under given rootDir, returns as directory mapped object.
  *

@@ -2,7 +2,7 @@
 import { Starter } from '@yawf/yawf-core'
 import coreHooks from '@yawf/yawf-core-hooks'
 
-import Hook from '@yawf/yawf-core'
+import { Hook, Task } from '@yawf/yawf-core'
 
 /*::
 export type YawfOptions = {
@@ -38,8 +38,12 @@ function loadCoreHooks(core) {
 
 export default {
   Hook,
+  Task,
   yawf,
   get mixins() {
     return global.__frameworkCore.__mixins
+  },
+  get tasks() {
+    return global.__frameworkCore.__tasks
   }
 }

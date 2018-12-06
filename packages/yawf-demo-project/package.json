@@ -22,7 +22,7 @@
     "url": "git+https://github.com/mk2/yawf.git"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "node --experimental-worker app.js",
     "cypress:version": "cypress version",
     "cypress:verify": "cypress verify",
     "cypress:open": "cypress open",
