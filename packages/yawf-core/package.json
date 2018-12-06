@@ -17,7 +17,7 @@
     "lib"
   ],
   "scripts": {
-    "test": "node --experimental-worker ../../node_modules/.bin/jest.js --config ./jest.config.js --coverage"
+    "test": "jest --config ./jest.config.js --coverage"
   },
   "bugs": {
     "url": "https://github.com/mk2/yawf/issues"

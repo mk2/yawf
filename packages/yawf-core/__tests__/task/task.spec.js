@@ -1,6 +1,8 @@
 const path = require('path')
 const Core = require('../../lib/core')
 
+process.argv.push('--experimental-worker')
+
 describe('Task specs', () => {
 
   test('Run task normally.', async () => {
