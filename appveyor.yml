@@ -17,7 +17,7 @@ cache:
 test_script:
   - node --version
   - npm --version
-  - npm run coreTest
+  - npm run coreTest_win
   - npx cypress version
   - npx cypress verify
   - cd packages

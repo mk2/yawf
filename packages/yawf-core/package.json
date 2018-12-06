@@ -17,7 +17,8 @@
     "lib"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-worker jest --config ./jest.config.js --coverage"
+    "test": "NODE_OPTIONS=--experimental-worker jest --config ./jest.config.js --coverage",
+    "test_win": "set NODE_OPTIONS=--experimental-worker && jest --config ./jest.config.js --coverage"
   },
   "bugs": {
     "url": "https://github.com/mk2/yawf/issues"

@@ -13,6 +13,7 @@
     "packageInstall": "lerna bootstrap",
     "packageTest": "npm run build && lerna run test",
     "coreTest": "npm run build && lerna run --scope @yawf/yawf-core test",
+    "coreTest_win": "npm run build && lerna run --scope @yawf/yawf-core test_win",
     "demoTest": "npm run build && cd packages && cd yawf-demo-project && npm run cypress:run",
     "flow": "flow"
   },
