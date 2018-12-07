@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:10.13
+      - image: cypress/browsers:chrome67
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -33,10 +33,15 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+            - .cache/Cypress
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
+
       - run: npm run coreTest
+
+      - run: npx cypress version
+      - run: npx cypress verify
       - run:
           name: start yawf-demo-project
           command: npm start &
