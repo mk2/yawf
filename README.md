@@ -12,6 +12,7 @@
 ```
 npm i
 npm run packageInstall
+npm run setup
 ```
 
 ## Run demo project

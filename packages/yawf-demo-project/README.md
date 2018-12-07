@@ -9,4 +9,9 @@
 
 ## How to start?
 
-Please use `@yawf/yawf-cli` package for scaffolding yawf application. Looking for more informations, visit at [https://github.com/mk2/yawf](https://github.com/mk2/yawf).
+```sh
+# NOTE: Finish top level package setup previously. (see https://github.com/mk2/yawf#ready-for-development)
+cd client && npm i
+cd ..
+npm start
+```
