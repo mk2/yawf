@@ -28,6 +28,7 @@
     "@babel/register": "^7.0.0",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-plugin-dynamic-import-node": "^2.2.0",
+    "cross-spawn": "^6.0.5",
     "flow-bin": "^0.83.0",
     "jest": "^23.6.0",
     "lerna": "^3.5.1",
