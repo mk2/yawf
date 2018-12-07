@@ -14,6 +14,6 @@ async function link(src, tgt) {
 }
 
 async function main() {
-  await link(resolvePath('scripts', 'pre-commit.sh'), resolvePath('.git', 'hooks', 'pre-commit'))
+  await link(resolvePath('scripts', 'hooks', 'pre-commit.sh'), resolvePath('.git', 'hooks', 'pre-commit'))
 }
 main()
