@@ -44,7 +44,8 @@ jobs:
       - run: npx cypress verify
       - run:
           name: start yawf-demo-project
-          command: npm start &
+          command: npm start
+          background: true
           working_directory: packages/yawf-demo-project
       - run:
           name: run cypress
