@@ -20,6 +20,9 @@ export function dedef(obj /*: any */) {
   return obj.default ? obj.default : obj
 }
 
+/**
+ * Search all files under given rootDir, returns as basename mapped object.
+ */
 export function globfiles(rootDir /*: string */, _options /*: any */ = {}) /*: { [string]: string } */ {
   const options = _.merge({
     ext: 'js',
@@ -29,7 +32,9 @@ export function globfiles(rootDir /*: string */, _options /*: any */ = {}) /*: {
   const files = glob.sync(path.join('**', `*.${ext}`), { cwd: rootDir })
   const filesobj = {}
   for (let file of files) {
-    filesobj[path.basename(file, `.${ext}`)] = useAbsolutePath ? path.resolve(rootDir, file) : path.normalize(file)
+    const basename = path.basename(file, `.${ext}`)
+    const filename = !!filesobj[filename] ? `${basename}#${process.hrtime.bigint()}` : basename
+    filesobj[basename] = useAbsolutePath ? path.resolve(rootDir, file) : path.normalize(file)
   }
   return filesobj
 }
