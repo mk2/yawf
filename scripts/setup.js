@@ -6,7 +6,14 @@ function resolvePath(...relativePath) {
   return path.resolve(process.cwd(), ...relativePath)
 }
 
+async function link(src, tgt) {
+  try {
+    await fs.unlink(tgt)
+  } catch (e) {}
+  await fs.link(src, tgt)
+}
+
 async function main() {
-  await fs.link(resolvePath('scripts', 'pre-commit.sh'), resolvePath('.git', 'hooks', 'pre-commit.sh'))
+  await link(resolvePath('scripts', 'pre-commit.sh'), resolvePath('.git', 'hooks', 'pre-commit'))
 }
 main()
