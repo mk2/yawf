@@ -18,6 +18,7 @@ async function main() {
   const child = spawn('npm', [ 'run', 'build' ], { stdio: [ 'ignore', 'ignore', 'pipe' ] })
   const contents = await echoReadable(child.stderr)
   if (contents.indexOf('lerna ERR!') >= 0) {
+    console.error(`Failed: npm run build`)
     process.exit(1)
   } else {
     process.exit(0)
