@@ -60,18 +60,16 @@ export default class extends Hook {
     }
   }
 
-  async __processWebpack({ clientDir, webpackConfig }) {
+  __processWebpack({ clientDir, webpackConfig }) {
     const compiler = webpack(webpackConfig)
     this.$addStatic(path.resolve(webpackConfig.output.path))
-    return await new Promise((resolve, reject) => {
-      compiler.run((err, stats) => {
-        if (err) reject(err)
-        this.$debug('Webpack compilation was succeeded!')
-      })
+    compiler.run((err, stats) => {
+      if (err) this.$error({ err, stats })
+      this.$debug('Webpack compilation was succeeded!')
     })
   }
 
-  async __processWebpackDevMiddleware({ clientDir, webpackConfig }) {
+  __processWebpackDevMiddleware({ clientDir, webpackConfig }) {
     this.$addMiddleware(middleware(webpack(webpackConfig), {
       logger: this.__logger.scope('webpack')
     }))
