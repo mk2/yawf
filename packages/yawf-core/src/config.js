@@ -4,6 +4,8 @@ export default {
    * configs
    */
   app: {
+    isProduction: false,
+    environment: 'development',
     globalName: '__frameworkCore',
     configDir: 'config',
     appDir: 'server',

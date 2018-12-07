@@ -86,10 +86,10 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
     super()
     this.__serverApi = serverApi
     this.__rootDir = rootDir
-    this.__config = {
-      ...defaultConfig,
-      ...options
-    }
+    this.__config = _.merge(
+      defaultConfig,
+      options
+    )
     this.__events = {
       ...FrameworkEvents
     }
@@ -387,41 +387,33 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
   }
 
   __applyLoadedConfig() {
-    this.__configureServerApi()
-    if (this.__serverApi) {
-      for (let middleware of this.__middlewares) {
-        this.__serverApi.use(middleware)
-      }
+    if (!this.__serverApi) return
+    const serverApi = this.__serverApi
+    this.__configureServerApi({ serverApi })
+    console.log(this.__middlewares)
+    for (let middleware of this.__middlewares) {
+      serverApi.use(middleware)
     }
   }
 
-  __configureServerApi() {
-    this.__configureViewEngine()
-    this.__configureViews()
-    this.__configureBodyParser()
+  __configureServerApi({ serverApi }) {
+    this.__configureViewEngine({ serverApi })
+    this.__configureViews({ serverApi })
+    this.__configureBodyParser( { serverApi })
   }
 
-  __configureViewEngine() {
+  __configureViewEngine({ serverApi }) {
     if (!this.__config.viewTemplate.engine) return
     if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
-    if (!this.__serverApi) return
-    const serverApi = this.__serverApi
-
     serverApi.set('view engine', this.__config.viewTemplate.engine)
   }
 
-  __configureViews() {
+  __configureViews({ serverApi }) {
     if (!this.__config.app.viewsDirs) return
-    if (!this.__serverApi) return
-    const serverApi = this.__serverApi
-
     serverApi.set('views', this.__config.app.viewsDirs)
   }
 
-  __configureBodyParser() {
-    if (!this.__serverApi) return
-    const serverApi = this.__serverApi
-
+  __configureBodyParser({ serverApi }) {
     serverApi.use(bodyParser.json())
     serverApi.use(bodyParser.urlencoded({ extended: true }))
   }
@@ -452,6 +444,13 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
   }
 
   __bind404ActionsToRoutes() {
+    this.__serverApi.use((req, res, next) => {
+      if (res.headersSent) return
+      this.emit(this.__events.core.didHappenError, new Error(`Route(${req.path}) has not an action.`))
+      res.status(404)
+      res.render('error', { statusCode: 404 })
+    })
+    /*
     const path = '*'
     const actionFn = (req, res) => {
       if (res.headersSent) return
@@ -463,6 +462,7 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
     this.post({ path, actionFn })
     this.put({ path, actionFn })
     this.delete({ path, actionFn })
+    */
   }
 
   __callHookDefaultsMethods() {

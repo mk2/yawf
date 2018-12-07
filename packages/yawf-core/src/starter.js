@@ -36,7 +36,12 @@ export default class Starter /*:: implements InternalStarterApi */ {
   __core = null
 
   constructor(options /*: Options */) {
-    options = options || {}
+    options = options || {
+      app: {
+        isProduction: process.env.NODE_ENV === 'production',
+        environment: process.env.NODE_ENV
+      }
+    }
     this.__port = options.port || this.__port
     this.__serverApi = options.serverApi || express()
     this.__rootDir = options.rootDir || process.cwd()

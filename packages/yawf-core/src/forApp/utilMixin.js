@@ -7,6 +7,7 @@ import type { InternalHookApi } from './hook'
  */
 
 import { readmodules, isClass, mergeWithProp } from '../util'
+import express from 'express'
 
 export default function utilMixin(Base /*: Class<any> */) /*: Class<any> */ {
   return class extends Base {
@@ -64,7 +65,11 @@ export default function utilMixin(Base /*: Class<any> */) /*: Class<any> */ {
     }
 
     $addMiddleware(middleware /*: Middleware */) {
-      return this.$middlewares.push(middleware)
+      this.$core.__middlewares.push(middleware)
+    }
+
+    $addStatic(...args) {
+      return this.$addMiddleware(express.static(...args))
     }
 
     $loadHooks(hooks /*: any */) {
