@@ -37,6 +37,4 @@ jobs:
         
       # run tests!
       - run: npm run coreTest
-      - run: cd packages/yawf-demo-project
-      - run: npm start &
-      - run: npm run cypress:run
+      - run: cd packages/yawf-demo-project && npm start & npm run cypress:run
