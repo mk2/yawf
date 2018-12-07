@@ -33,7 +33,7 @@ export function globfiles(rootDir /*: string */, _options /*: any */ = {}) /*: {
   const filesobj = {}
   for (let file of files) {
     const basename = path.basename(file, `.${ext}`)
-    const filename = !!filesobj[filename] ? `${basename}#${process.hrtime.bigint()}` : basename
+    const filename = !!filesobj[basename] ? `${basename}#${process.hrtime.bigint()}` : basename
     filesobj[basename] = useAbsolutePath ? path.resolve(rootDir, file) : path.normalize(file)
   }
   return filesobj
