@@ -1,5 +1,3 @@
-// @flow
-
 import { Signale } from 'signale'
 
 /*::

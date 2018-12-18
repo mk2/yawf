@@ -1,13 +1,12 @@
 // @flow
 
 /*::
-import Mixin from '../core'
 
 export interface HookApi {
   defaults(): any;
   configure(): any;
   initialize(): ?Promise<any>;
-  registerMixins(): { [string]: Mixin };
+  registerMixins(): { [string]: (Class<any>) => Class<any> };
   registerActions(): any;
   bindActionsToRoutes(): any;
   teardown(): ?Promise<any>;
