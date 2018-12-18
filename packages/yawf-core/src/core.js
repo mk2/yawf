@@ -314,7 +314,7 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
   async __loadAppTasks() {
     let taskfiles /*: { [string]: string } */ = {}
     try {
-      taskfiles = globfiles(this.__rootDir)
+      taskfiles = this.__rootDir ? globfiles(this.__rootDir) : {}
     } catch (e) {
       this.emit(this.__events.core.didHappenError, e)
       return
@@ -396,24 +396,24 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
     }
   }
 
-  __configureServerApi({ serverApi }) {
+  __configureServerApi({ serverApi } /*: { serverApi: ServerApi } */) {
     this.__configureViewEngine({ serverApi })
     this.__configureViews({ serverApi })
     this.__configureBodyParser( { serverApi })
   }
 
-  __configureViewEngine({ serverApi }) {
+  __configureViewEngine({ serverApi } /*: { serverApi: ServerApi } */) {
     if (!this.__config.viewTemplate.engine) return
     if (!this.__config.app.viewEngines.includes(this.__config.viewTemplate.engine)) return
     serverApi.set('view engine', this.__config.viewTemplate.engine)
   }
 
-  __configureViews({ serverApi }) {
+  __configureViews({ serverApi } /*: { serverApi: ServerApi } */) {
     if (!this.__config.app.viewsDirs) return
     serverApi.set('views', this.__config.app.viewsDirs)
   }
 
-  __configureBodyParser({ serverApi }) {
+  __configureBodyParser({ serverApi } /*: { serverApi: ServerApi } */) {
     serverApi.use(bodyParser.json())
     serverApi.use(bodyParser.urlencoded({ extended: true }))
   }
@@ -444,25 +444,14 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
   }
 
   __bind404ActionsToRoutes() {
-    this.__serverApi.use((req, res, next) => {
+    if (!this.__serverApi) return
+    const serverApi = this.__serverApi
+    serverApi.use((req /*: Req */, res /*: Res */, next /*: NextFn */) => {
       if (res.headersSent) return
       this.emit(this.__events.core.didHappenError, new Error(`Route(${req.path}) has not an action.`))
       res.status(404)
       res.render('error', { statusCode: 404 })
     })
-    /*
-    const path = '*'
-    const actionFn = (req, res) => {
-      if (res.headersSent) return
-      this.emit(this.__events.core.didHappenError, new Error(`Route(${req.path}) has not an action.`))
-      res.status(404)
-      res.render('error', { statusCode: 404 })
-    }
-    this.get({ path, actionFn })
-    this.post({ path, actionFn })
-    this.put({ path, actionFn })
-    this.delete({ path, actionFn })
-    */
   }
 
   __callHookDefaultsMethods() {
@@ -496,10 +485,10 @@ export default class Core extends EventEmitter /*:: implements InternalCoreApi *
       const hook = this.__hooks[hookName]
       if (!hook.registerMixins) return
       try {
-        const mixins = hook.registerMixins()
+        const mixins /*: { [string]: Mixin } */ = hook.registerMixins()
         this.__mixins[hookName] = {}
         for (let mixinName in mixins) {
-          const mixin = mixins[mixinName]
+          const mixin /*: Mixin */ = mixins[mixinName]
           this.__mixins[hookName][mixinName] = this.__wrapMixin(mixin)
         }
       } catch (e) {

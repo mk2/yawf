@@ -103,7 +103,8 @@ export default class extends Hook {
   }
 
   async teardown() {
-    await this.sequelize.close()
+    const sequelize = this.sequelize
+    if (sequelize) await sequelize.close()
   }
 
 }
