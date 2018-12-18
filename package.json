@@ -16,7 +16,7 @@
     "coreTest_win": "npm run build && lerna run --scope @yawf/yawf-core test_win",
     "demoTest": "npm run build && cd packages && cd yawf-demo-project && npm run cypress:run",
     "flow": "flow",
-    "setup": "node --no-warnings scripts/setup.js"
+    "postinstall": "node --no-warnings scripts/setup.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
