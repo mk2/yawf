@@ -33,7 +33,7 @@
     "cross-spawn": "^6.0.5",
     "flow-bin": "^0.91.0",
     "jest": "^24.0.0",
-    "lerna": "^3.10.8",
+    "lerna": "^3.13.1",
     "regenerator-runtime": "^0.13.1",
     "rimraf": "^2.6.3"
   },
