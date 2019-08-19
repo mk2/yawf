@@ -26,8 +26,8 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: npm ci
-      - run: npm run packageInstall
+      - run: yarn --frozen-lockfile
+      - run: yarn lerna bootstrap
       - run: npx cypress cache path
 
       - save_cache:
@@ -38,16 +38,16 @@ jobs:
         
       # run tests!
 
-      - run: npm run coreTest
+      - run: yarn coreTest
 
       - run: npx cypress version
       - run: npx cypress verify
       - run:
           name: start yawf-demo-project
-          command: npm start
+          command: yarn start
           background: true
           working_directory: packages/yawf-demo-project
       - run:
           name: run cypress
-          command: npm run cypress:run
+          command: yarn cypress:run
           working_directory: packages/yawf-demo-project

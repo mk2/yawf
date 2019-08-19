@@ -18,6 +18,9 @@
     "flow": "flow",
     "postinstall": "node --no-warnings scripts/setup.js"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.5.5",

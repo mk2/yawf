@@ -6,8 +6,8 @@ init:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm ci
-  - npm run packageInstall
+  - yarn --frozen-lockfile
+  - yarn lerna bootstrap
   - npx cypress cache path
 
 cache:
@@ -16,14 +16,14 @@ cache:
 
 test_script:
   - node --version
-  - npm --version
-  - npm run coreTest_win
+  - yarn --version
+  - yarn coreTest_win
   - npx cypress version
   - npx cypress verify
   - cd packages
   - cd yawf-demo-project
-  - ps: $ServerProcess = Start-Process npm start -PassThru
-  - npm run cypress:run
+  - ps: $ServerProcess = Start-Process yarn start -PassThru
+  - yarn cypress:run
 
 on_finish:
   - ps: Stop-Process -Id $ServerProcess.Id

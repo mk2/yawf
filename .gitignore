@@ -7,3 +7,4 @@ coverage/
 *.db
 lerna-debug.log
 *.mp4
+.idea/
