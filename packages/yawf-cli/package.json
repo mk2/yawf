@@ -34,7 +34,7 @@
     "url": "https://github.com/mk2/yawf/issues"
   },
   "dependencies": {
-    "@babel/generator": "^7.5.5",
+    "@babel/generator": "^7.9.5",
     "@babel/parser": "^7.5.5",
     "cross-spawn": "^7.0.1",
     "inquirer": "^6.2.0",
